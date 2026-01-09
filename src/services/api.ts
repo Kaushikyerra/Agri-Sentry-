@@ -1,5 +1,5 @@
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://agri-sentry-production-cbaa.up.railway.app/';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://agri-sentry.onrender.com';
 
 export interface MandiPrice {
     id?: number;
