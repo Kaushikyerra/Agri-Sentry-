@@ -1,0 +1,4 @@
+project_id = "vnqhnsmtzmpzvzikbrhl"
+
+[functions.agricultural-advisor]
+verify_jwt = true
