@@ -6,8 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { Sprout, Droplets, FlaskConical, MessageCircle, Calendar, Cloud, TrendingUp, IndianRupee } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
+import { useFarm } from "@/contexts/FarmContext";
 
 const Dashboard = () => {
+  const { currentData } = useFarm();
   const [user, setUser] = useState<any>(null);
   const [stats, setStats] = useState({
     totalFields: 0,
@@ -160,13 +162,14 @@ const Dashboard = () => {
 
             <Card className="border-2 border-accent/20">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Weather</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Weather (Live)</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2">
                   <Cloud className="h-5 w-5 text-accent" />
-                  <span className="text-3xl font-bold">{stats.weatherTemp}</span>
+                  <span className="text-3xl font-bold">{currentData.temperature}°C</span>
                 </div>
+                <p className="text-xs text-muted-foreground mt-1">Humidity: {currentData.humidity}%</p>
               </CardContent>
             </Card>
 
