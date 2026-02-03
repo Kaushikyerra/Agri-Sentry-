@@ -1,0 +1,9 @@
+{
+  "name": "Kisan Sahayak (Smart Agri Assistant)",
+  "description": "An AI-powered smart agriculture assistant for farmers in India, featuring real-time speech interaction, pest detection, and simulated IoT sensor monitoring.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
