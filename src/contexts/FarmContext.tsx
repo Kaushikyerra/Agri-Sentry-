@@ -60,28 +60,22 @@ export const FarmProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Simulation Loop
     useEffect(() => {
-        const TICK_RATE = 1000; // Real milliseconds per tick
-        const TIME_SPEED = 1000 * 60 * 15; // 15 minutes per tick
+        const TICK_RATE = 5000; // Update every 5 seconds
+        const TIME_SPEED = 1000 * 60; // Advance time by 1 minute per tick
 
         const interval = setInterval(() => {
             setSimulatedTime(prevTime => {
                 const newTime = new Date(prevTime + TIME_SPEED);
-                const hour = newTime.getHours();
+                const hoursFloat = newTime.getHours() + newTime.getMinutes() / 60;
 
                 // --- Physics Simulation ---
 
                 // 1. Temperature Cycle (Sinusoidal: Coolest at 4AM, Hottest at 2PM)
-                // Normalize hour 4 -> -PI/2, 14 -> PI/2
-                const tempBase = 28;
-                const tempVariation = 8; // +/- 8 degrees
-                const tempFactor = Math.sin(((hour - 4) / 24) * 2 * Math.PI - (Math.PI / 2));
-                // Shifted slightly to peak around 2PM (14:00)
-                // Let's use simpler: Peak at 14, Low at 2
-                const dailyCycle = Math.sin(((hour - 8) / 24) * 2 * Math.PI);
-                const ambientTemp = 25 + (dailyCycle * 10); // 15C to 35C range
+                const dailyCycle = Math.sin(((hoursFloat - 9) / 24) * 2 * Math.PI);
+                const ambientTemp = 25 + (dailyCycle * 8); // 17C to 33C range
 
                 // 2. Humidity (Inverse to Temp usually)
-                const ambientHum = 80 - (dailyCycle * 30); // 50% to 110% (clamped below)
+                const ambientHum = 70 - (dailyCycle * 25); // 45% to 95%
 
                 // Update Fields
                 setFieldData(prevFields => {
@@ -91,29 +85,26 @@ export const FarmProvider: React.FC<{ children: React.ReactNode }> = ({ children
                         const prev = nextFields[id] || { soilMoisture: 50, ec: 1.2 };
 
                         // Soil Moisture Decay (Evaporation)
-                        // Higher temp = faster evaporation
-                        const evaporationRate = (ambientTemp > 30 ? 0.2 : 0.05);
+                        const evaporationRate = (ambientTemp > 30 ? 0.05 : 0.01); // Reduced evaporation
                         let newMoisture = prev.soilMoisture - evaporationRate;
 
-                        // Auto-Irrigation Simulation Trigger (if very low, pretend watered)
-                        // In reality, hardware doesn't water itself unless automated, but let's simulate a farmer intervention
-                        // or just let it drop to show alerts. Let's let it drop but clamp at 10%
-                        if (newMoisture < 10) newMoisture = 10;
+                        // Auto-Irrigation Simulation Trigger
+                        if (newMoisture < 20) newMoisture = 20; // Maintain minimum moisture
 
-                        // Add some noise
-                        const noise = (Math.random() - 0.5) * 0.5;
+                        // Minor noise for realism
+                        const noise = (Math.random() - 0.5) * 0.2;
 
                         nextFields[id] = {
                             timestamp: newTime.toISOString(),
                             temperature: Number((ambientTemp + (Math.random() - 0.5)).toFixed(1)),
-                            humidity: Number(Math.min(100, Math.max(30, ambientHum + (Math.random() * 5))).toFixed(1)),
+                            humidity: Number(Math.min(100, Math.max(30, ambientHum + (Math.random() * 2))).toFixed(1)),
                             soilMoisture: Number((newMoisture + noise).toFixed(1)),
-                            ec: prev.ec // Const for now
+                            ec: prev.ec
                         };
                     });
 
                     // Update global avg (for dashboard)
-                    setCurrentData(nextFields['wheat-a'] || { ...prevFields['wheat-a'] }); // Just use one field as "Weather Station"
+                    setCurrentData(nextFields['wheat-a'] || { ...prevFields['wheat-a'] });
 
                     return nextFields;
                 });

@@ -1,23 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useFarm } from '../contexts/FarmContext';
+import { useFarm } from '@/contexts/FarmContext';
 import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
-import { Mic, MicOff, Volume2, XCircle, ArrowLeft } from 'lucide-react';
-import { createPcmBlob, decodeAudioData } from '../utils/audioUtils';
+import { Mic, MicOff, Volume2, XCircle, Sparkles } from 'lucide-react';
+import { createPcmBlob, decodeAudioData } from '@/utils/audioUtils';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-interface LiveAssistantProps {
-    isWidget?: boolean;
-    onClose?: () => void;
-}
-
-export const LiveAssistant: React.FC<LiveAssistantProps> = ({ isWidget = false, onClose }) => {
+export const LiveAssistant: React.FC = () => {
     const { currentData, location } = useFarm();
     const [isConnected, setIsConnected] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false); // User speaking
     const [isAIResponding, setIsAIResponding] = useState(false); // AI speaking
     const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate();
 
     // Refs for audio handling
     const inputAudioContextRef = useRef<AudioContext | null>(null);
@@ -35,11 +29,7 @@ export const LiveAssistant: React.FC<LiveAssistantProps> = ({ isWidget = false, 
 
     const stopConnection = () => {
         if (sessionRef.current) {
-            // There isn't a direct "close" method on the promise result easily accessible 
-            // without keeping the session object. We rely on closing the stream and contexts 
-            // to naturally end the flow.
-            // But optimally we should close the websocket if exposed.
-            // For this demo, we assume closing contexts cleans up.
+            // Close session if possible
         }
 
         if (streamRef.current) {
@@ -67,7 +57,7 @@ export const LiveAssistant: React.FC<LiveAssistantProps> = ({ isWidget = false, 
     const startConnection = async () => {
         setError(null);
         try {
-            if (!apiKey) throw new Error("API Key not found. Please set VITE_GEMINI_API_KEY in .env");
+            if (!apiKey) throw new Error("API Key not found");
 
             const ai = new GoogleGenAI({ apiKey });
 
@@ -212,129 +202,77 @@ export const LiveAssistant: React.FC<LiveAssistantProps> = ({ isWidget = false, 
         };
     }, []);
 
-    // WIDGET UI
-    if (isWidget) {
-        return (
-            <div className="flex flex-col items-center p-4 bg-white rounded-xl h-full w-full">
-                <div className="w-full flex justify-between items-center mb-4">
-                    <h2 className="font-bold text-green-800">Kisan Sahayak</h2>
-                    <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
-                        <XCircle className="h-5 w-5 text-gray-400" />
-                    </Button>
-                </div>
-
-                {/* Visualizer Mini */}
-                <div className={`w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300 mb-6 ${isConnected
-                    ? isAIResponding
-                        ? "bg-green-100 shadow-[0_0_40px_rgba(34,197,94,0.4)] scale-110"
-                        : isSpeaking
-                            ? "bg-blue-100 shadow-[0_0_30px_rgba(59,130,246,0.3)]"
-                            : "bg-green-50 border-4 border-green-200"
-                    : "bg-gray-100"
-                    }`}>
-                    {isConnected ? (
-                        isAIResponding ? <Volume2 className="w-12 h-12 text-green-600 animate-pulse" /> : <Mic className={`w-12 h-12 ${isSpeaking ? "text-blue-500" : "text-green-600"}`} />
-                    ) : (
-                        <MicOff className="w-12 h-12 text-gray-400" />
-                    )}
-                </div>
-
-                <div className="space-y-4 w-full">
-                    {!isConnected ? (
-                        <button
-                            onClick={startConnection}
-                            className="w-full flex items-center justify-center py-3 bg-green-600 hover:bg-green-700 text-white rounded-full font-bold shadow-md"
-                        >
-                            <Mic className="w-5 h-5 mr-2" />
-                            Start
-                        </button>
-                    ) : (
-                        <button
-                            onClick={stopConnection}
-                            className="w-full flex items-center justify-center py-3 bg-red-500 hover:bg-red-600 text-white rounded-full font-bold shadow-md"
-                        >
-                            <XCircle className="w-5 h-5 mr-2" />
-                            End
-                        </button>
-                    )}
-                    {error && <p className="text-xs text-red-500 text-center">{error}</p>}
-                </div>
-            </div>
-        );
-    }
-
-    // FULL PAGE UI (Legacy/Fallback)
     return (
-        <div className="flex flex-col h-screen bg-gray-50">
-            <div className="p-4 flex items-center bg-white shadow-sm">
-                <Button variant="ghost" onClick={() => navigate(-1)} className="mr-2">
-                    <ArrowLeft className="h-6 w-6" />
-                </Button>
-                <h1 className="text-xl font-bold text-green-800">Voice Assistant</h1>
-            </div>
+        <Card className={`border-2 transition-all duration-500 overflow-hidden ${isConnected
+                ? "border-green-400 bg-gradient-to-br from-green-50 to-white shadow-glow"
+                : "border-primary/20 hover:border-primary/40 bg-card"
+            }`}>
+            <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                    <Sparkles className={`w-5 h-5 ${isConnected ? "text-green-600 animate-pulse" : "text-primary"}`} />
+                    Kisan Sahayak (Voice AI)
+                </CardTitle>
+            </CardHeader>
 
-            <div className="flex-1 flex flex-col items-center justify-center p-6 space-y-8 bg-gradient-to-b from-green-50 to-white">
-                <div className="text-center space-y-2">
-                    <h2 className="text-2xl font-bold text-green-800">Kisan Sahayak</h2>
-                    <p className="text-gray-600">Speak in Telugu, Hindi, or English</p>
-                </div>
-
-                <div className="relative">
+            <CardContent className="space-y-6">
+                <div className="flex flex-col items-center justify-center py-4">
                     {/* Visualizer Circle */}
-                    <div className={`w-40 h-40 rounded-full flex items-center justify-center transition-all duration-300 ${isConnected
-                        ? isAIResponding
-                            ? "bg-green-100 shadow-[0_0_40px_rgba(34,197,94,0.4)] scale-110"
-                            : isSpeaking
-                                ? "bg-blue-100 shadow-[0_0_30px_rgba(59,130,246,0.3)]"
-                                : "bg-green-50 border-4 border-green-200"
-                        : "bg-gray-100"
+                    <div className={`w-32 h-32 rounded-full flex items-center justify-center transition-all duration-500 ${isConnected
+                            ? isAIResponding
+                                ? "bg-gradient-to-tr from-green-400 to-green-300 shadow-[0_0_30px_rgba(34,197,94,0.6)] scale-110"
+                                : isSpeaking
+                                    ? "bg-blue-100 shadow-[0_0_20px_rgba(59,130,246,0.4)] scale-105"
+                                    : "bg-green-100 border-4 border-green-200"
+                            : "bg-secondary/10"
                         }`}>
                         {isConnected ? (
-                            isAIResponding ? <Volume2 className="w-16 h-16 text-green-600 animate-pulse" /> : <Mic className={`w-16 h-16 ${isSpeaking ? "text-blue-500" : "text-green-600"}`} />
+                            isAIResponding ? (
+                                <Volume2 className="w-12 h-12 text-white animate-bounce" />
+                            ) : (
+                                <Mic className={`w-12 h-12 transition-colors ${isSpeaking ? "text-blue-500" : "text-green-600"}`} />
+                            )
                         ) : (
-                            <MicOff className="w-16 h-16 text-gray-400" />
+                            <MicOff className="w-12 h-12 text-muted-foreground" />
                         )}
                     </div>
 
-                    {/* Status Badge */}
-                    {isConnected && (
-                        <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-white px-3 py-1 rounded-full shadow-md text-xs font-semibold text-green-700 border border-green-100">
-                            {isAIResponding ? "Speaking..." : "Listening..."}
-                        </div>
-                    )}
+                    <div className="mt-4 h-6">
+                        {isConnected && (
+                            <span className={`text-sm font-medium px-3 py-1 rounded-full transition-colors ${isAIResponding ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
+                                }`}>
+                                {isAIResponding ? "Speaking..." : "Listening..."}
+                            </span>
+                        )}
+                    </div>
                 </div>
 
-                <div className="space-y-4 w-full max-w-xs">
+                <div className="space-y-2">
                     {!isConnected ? (
-                        <button
+                        <Button
                             onClick={startConnection}
-                            className="w-full flex items-center justify-center py-4 bg-green-600 hover:bg-green-700 text-white rounded-full font-bold text-lg shadow-lg transition-transform active:scale-95"
+                            className="w-full bg-gradient-earth hover:opacity-90 transition-all shadow-md text-white font-semibold py-6 text-lg rounded-xl"
                         >
-                            <Mic className="w-6 h-6 mr-2" />
+                            <Mic className="w-5 h-5 mr-2" />
                             Start Conversation
-                        </button>
+                        </Button>
                     ) : (
-                        <button
+                        <Button
                             onClick={stopConnection}
-                            className="w-full flex items-center justify-center py-4 bg-red-500 hover:bg-red-600 text-white rounded-full font-bold text-lg shadow-lg transition-transform active:scale-95"
+                            variant="destructive"
+                            className="w-full shadow-md py-6 text-lg rounded-xl"
                         >
-                            <XCircle className="w-6 h-6 mr-2" />
+                            <XCircle className="w-5 h-5 mr-2" />
                             End Call
-                        </button>
+                        </Button>
                     )}
 
                     {error && (
-                        <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg text-center">
+                        <p className="text-destructive text-sm text-center mt-2 bg-destructive/10 p-2 rounded">
                             {error}
-                        </div>
+                        </p>
                     )}
                 </div>
-
-                <div className="text-xs text-gray-400 text-center max-w-sm">
-                    Powered by Gemini Live API (gemini-2.5-flash-native-audio). <br />
-                    Provides real-time, low-latency speech interaction.
-                </div>
-            </div>
-        </div>
+            </CardContent>
+        </Card>
     );
 };

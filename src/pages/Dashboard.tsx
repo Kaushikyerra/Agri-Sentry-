@@ -3,10 +3,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Sprout, Droplets, FlaskConical, MessageCircle, Calendar, Cloud, TrendingUp, IndianRupee } from "lucide-react";
+import { Sprout, Droplets, FlaskConical, Cloud, TrendingUp, IndianRupee, Sparkles, Activity } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import { useFarm } from "@/contexts/FarmContext";
+import { LiveAssistant } from "@/components/LiveAssistant";
 
 const Dashboard = () => {
   const { currentData } = useFarm();
@@ -68,147 +69,159 @@ const Dashboard = () => {
   const quickAccessCards = [
     {
       title: "My Fields",
-      description: "Manage all your crops",
+      description: "Manage crops & land",
       icon: Sprout,
-      color: "text-primary",
-      bgColor: "bg-primary/10",
+      color: "text-green-600",
+      bgIcon: "bg-green-100",
       path: "/my-fields"
-    },
-    {
-      title: "Weather",
-      description: "Check forecast",
-      icon: Cloud,
-      color: "text-accent",
-      bgColor: "bg-accent/10",
-      path: "/weather"
     },
     {
       title: "Irrigation",
       description: "Water management",
       icon: Droplets,
-      color: "text-water",
-      bgColor: "bg-water/10",
+      color: "text-blue-600",
+      bgIcon: "bg-blue-100",
       path: "/irrigation"
     },
     {
       title: "Fertilizer",
-      description: "Nutrient application",
+      description: "Nutrient planning",
       icon: FlaskConical,
-      color: "text-fertilizer",
-      bgColor: "bg-fertilizer/10",
+      color: "text-orange-600",
+      bgIcon: "bg-orange-100",
       path: "/fertilizer"
     },
     {
-      title: "Activity Log",
-      description: "Track your activities",
-      icon: Calendar,
-      color: "text-secondary",
-      bgColor: "bg-secondary/10",
-      path: "/activity-log"
-    },
-    {
       title: "Mandi Prices",
-      description: "Market Rates & AI Prediction",
+      description: "Market Rates & AI",
       icon: IndianRupee,
-      color: "text-green-600",
-      bgColor: "bg-green-100",
+      color: "text-emerald-600",
+      bgIcon: "bg-emerald-100",
       path: "/mandi-prices"
     },
     {
-      title: "Ask Advisor",
-      description: "Get AI recommendations",
-      icon: MessageCircle,
-      color: "text-primary",
-      bgColor: "bg-primary/10",
-      path: "/advisor"
+      title: "Activity Log",
+      description: "Farm history",
+      icon: Activity,
+      color: "text-violet-600",
+      bgIcon: "bg-violet-100",
+      path: "/activity-log"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50/50 font-sans">
       <Navbar />
-      <div className="pt-20 px-4 pb-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
-            <p className="text-muted-foreground">Welcome back! Here's your farm overview.</p>
-          </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <Card className="border-2 border-primary/20">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Total Fields</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  <Sprout className="h-5 w-5 text-primary" />
-                  <span className="text-3xl font-bold">{stats.totalFields}</span>
-                </div>
-              </CardContent>
-            </Card>
+      <div className="pt-24 px-4 pb-12 max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+            Farm Dashboard
+          </h1>
+          <p className="text-gray-500 mt-1">Real-time insights for your smart farm.</p>
+        </div>
 
-            <Card className="border-2 border-water/20">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Next Irrigation</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  <Droplets className="h-5 w-5 text-water" />
-                  <span className="text-xl font-bold">{stats.nextIrrigation}</span>
-                </div>
-              </CardContent>
-            </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content Column */}
+          <div className="lg:col-span-2 space-y-8">
 
-            <Card className="border-2 border-accent/20">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Weather (Live)</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  <Cloud className="h-5 w-5 text-accent" />
-                  <span className="text-3xl font-bold">{currentData.temperature}°C</span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">Humidity: {currentData.humidity}%</p>
-              </CardContent>
-            </Card>
+            {/* Stats Grid - Clean White Style */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Card className="bg-white border shadow-sm hover:shadow-md transition-shadow">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-500">Total Fields</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-50 rounded-lg">
+                      <Sprout className="h-6 w-6 text-green-600" />
+                    </div>
+                    <span className="text-2xl font-bold text-gray-900">{stats.totalFields}</span>
+                  </div>
+                </CardContent>
+              </Card>
 
-            <Card className="border-2 border-secondary/20">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Recommendations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-secondary" />
-                  <span className="text-3xl font-bold">{stats.activeRecommendations}</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              <Card
+                className="bg-white border shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
+                onClick={() => navigate('/irrigation')}
+              >
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-500 group-hover:text-blue-600 transition-colors">Next Irrigation</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-50 rounded-lg">
+                      <Droplets className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <span className="text-xl font-bold text-gray-900 truncate">{stats.nextIrrigation}</span>
+                  </div>
+                </CardContent>
+              </Card>
 
-          {/* Quick Access */}
-          <div>
-            <h2 className="text-2xl font-bold mb-6">Quick Access</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {quickAccessCards.map((card) => (
-                <Card
-                  key={card.title}
-                  className={`${card.bgColor} border-2 hover:shadow-glow transition-all cursor-pointer hover-scale`}
-                  onClick={() => navigate(card.path)}
-                >
-                  <CardHeader>
-                    <div className="flex items-center gap-3">
-                      <div className="p-3 rounded-lg bg-card shadow-soft">
+              <Card
+                className="bg-white border shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
+                onClick={() => navigate('/weather')}
+              >
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-500 group-hover:text-sky-600 transition-colors">Weather (Live)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-sky-50 rounded-lg">
+                      <Cloud className="h-6 w-6 text-sky-600" />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-gray-900">{currentData.temperature}°C</div>
+                      <p className="text-xs text-gray-500">Humidity: {currentData.humidity}%</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick Access - Minimalist */}
+            <div>
+              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-800">
+                <Sparkles className="w-5 h-5 text-amber-500" />
+                Quick Actions
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {quickAccessCards.map((card) => (
+                  <Card
+                    key={card.title}
+                    className="bg-white border hover:border-gray-300 shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer group"
+                    onClick={() => navigate(card.path)}
+                  >
+                    <CardHeader className="flex flex-row items-center gap-4 p-5">
+                      <div className={`p-3 rounded-xl ${card.bgIcon} transition-transform group-hover:scale-110 duration-300`}>
                         <card.icon className={`h-6 w-6 ${card.color}`} />
                       </div>
                       <div>
-                        <CardTitle className="text-lg">{card.title}</CardTitle>
-                        <p className="text-sm text-muted-foreground">{card.description}</p>
+                        <CardTitle className="text-base text-gray-900 group-hover:text-primary transition-colors">
+                          {card.title}
+                        </CardTitle>
+                        <p className="text-sm text-gray-500">{card.description}</p>
                       </div>
-                    </div>
-                  </CardHeader>
-                </Card>
-              ))}
+                    </CardHeader>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Assistant */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="sticky top-24">
+              <LiveAssistant />
+
+              {/* Additional Info Box */}
+              <div className="mt-6 p-5 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-100">
+                <h3 className="font-semibold text-green-800 mb-2">Did you know?</h3>
+                <p className="text-sm text-green-700 leading-relaxed">
+                  You can ask the assistant about real-time mandi prices or weather forecasts just by speaking naturally.
+                </p>
+              </div>
             </div>
           </div>
         </div>

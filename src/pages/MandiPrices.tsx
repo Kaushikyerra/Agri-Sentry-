@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Search, TrendingUp, IndianRupee, MapPin } from "lucide-react";
+import { Loader2, Search, TrendingUp, IndianRupee, MapPin, ArrowLeft } from "lucide-react";
 import { api, MandiPrice, PredictionResult } from "@/services/api";
 
 const MandiPrices = () => {
@@ -161,6 +161,14 @@ const MandiPrices = () => {
             <Navbar />
             <div className="pt-20 px-4 pb-8 container mx-auto">
                 <div className="mb-8">
+                    <Button
+                        variant="ghost"
+                        className="mb-4 pl-0 hover:bg-transparent hover:text-primary group"
+                        onClick={() => window.location.href = '/dashboard'}
+                    >
+                        <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+                        Back to Dashboard
+                    </Button>
                     <h1 className="text-4xl font-bold mb-2 flex items-center gap-2">
                         <IndianRupee className="h-8 w-8 text-primary" />
                         Mandi Prices & Prediction
