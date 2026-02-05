@@ -82,7 +82,7 @@ def predict_price(req: PredictionRequest):
             password=os.getenv("DB_PASS", "password"),
             host=os.getenv("DB_HOST", "localhost"),
             port=os.getenv("DB_PORT", "5432"),
-            sslmode='require'
+            sslmode='prefer'
         )
         cur = conn.cursor()
         
@@ -216,7 +216,7 @@ def get_mandi_prices(state: str = None, district: str = None, limit: int = 100):
             password=os.getenv("DB_PASS", "password"),
             host=os.getenv("DB_HOST", "localhost"),
             port=os.getenv("DB_PORT", "5432"),
-            sslmode='require'
+            sslmode='prefer'
         )
         from psycopg2.extras import RealDictCursor
         cur = conn.cursor(cursor_factory=RealDictCursor)
