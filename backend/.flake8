@@ -1,0 +1,23 @@
+[flake8]
+max-line-length = 120
+max-doc-length = 120
+# Ignore whitespace/blank-line style issues (cosmetic)
+extend-ignore =
+    W291,W292,W293,W391,
+    E302,E303,E305,E501,
+    E111,E114,E117,E121,E122,E123,E124,E125,E126,E127,E128,
+    E131,E133,E203,E211,E225,E226,E228,E231,E241,E261,E262,
+    E265,E266,E271,E272,E301,E401,E402,E711,E712,E721,E741,
+    W503,W504,W605
+# Exclude generated/test/utility files
+exclude =
+    venv,
+    .venv,
+    __pycache__,
+    .git,
+    debug_db.py,
+    inspect_data.py,
+    test_mqtt.py,
+    test_imports.py,
+    test_mandi_endpoint.py,
+    test_prediction.py

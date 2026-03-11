@@ -7,3 +7,10 @@ python-dotenv
 requests
 scikit-learn
 joblib
+paho-mqtt
+supabase
+twilio
+apscheduler
+google-generativeai
+pytz
+python-dateutil
