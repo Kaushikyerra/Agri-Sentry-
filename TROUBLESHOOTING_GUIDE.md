@@ -115,9 +115,9 @@ python api.py
 
 Check `backend/.env`:
 ```
-TWILIO_ACCOUNT_SID=AC858df5a9aef501e04687e18f0038664f
-TWILIO_AUTH_TOKEN=d74228ca8a4eb8c99adf5341bc5f4a81
-TWILIO_PHONE_NUMBER=+15705651905
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_PHONE_NUMBER=your_twilio_phone_number
 ```
 
 If missing, add them and restart backend.
