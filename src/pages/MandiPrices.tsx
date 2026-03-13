@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,6 +12,7 @@ import { Loader2, Search, TrendingUp, IndianRupee, MapPin, ArrowLeft } from "luc
 import { api, MandiPrice, PredictionResult } from "@/services/api";
 
 const MandiPrices = () => {
+    const { t } = useTranslation();
     const [prices, setPrices] = useState<MandiPrice[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchState, setSearchState] = useState("");
@@ -36,7 +38,7 @@ const MandiPrices = () => {
             setPrices(data);
         } catch (error) {
             toast({
-                title: "Error",
+                title: t('error'),
                 description: "Could not fetch market prices. Make sure the backend is running.",
                 variant: "destructive",
             });
@@ -92,12 +94,12 @@ const MandiPrices = () => {
             });
             setPredictions(data.predictions);
             toast({
-                title: "Success",
+                title: t('success'),
                 description: `Prediction generated for ${data.commodity} in ${data.market}`,
             });
         } catch (error) {
             toast({
-                title: "Error",
+                title: t('error'),
                 description: "Could not generate prediction. Check input details.",
                 variant: "destructive",
             });
@@ -109,7 +111,7 @@ const MandiPrices = () => {
     const handleGeolocation = () => {
         if (!navigator.geolocation) {
             toast({
-                title: "Error",
+                title: t('error'),
                 description: "Geolocation is not supported by your browser",
                 variant: "destructive",
             });
@@ -139,7 +141,7 @@ const MandiPrices = () => {
                 }
             } catch (error) {
                 toast({
-                    title: "Error",
+                    title: t('error'),
                     description: "Failed to detect location details",
                     variant: "destructive",
                 });
@@ -148,7 +150,7 @@ const MandiPrices = () => {
             }
         }, () => {
             toast({
-                title: "Error",
+                title: t('error'),
                 description: "Unable to retrieve your location",
                 variant: "destructive",
             });
@@ -167,46 +169,46 @@ const MandiPrices = () => {
                         onClick={() => window.location.href = '/dashboard'}
                     >
                         <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-                        Back to Dashboard
+                        {t('backToDashboard')}
                     </Button>
                     <h1 className="text-4xl font-bold mb-2 flex items-center gap-2">
                         <IndianRupee className="h-8 w-8 text-primary" />
-                        Mandi Prices & Prediction
+                        {t('mandiPricesTitle')}
                     </h1>
-                    <p className="text-muted-foreground">Real-time market rates and AI-powered price forecasts.</p>
+                    <p className="text-muted-foreground">{t('realTimeMarketData')}</p>
                 </div>
 
                 <Tabs defaultValue="prices" className="space-y-4">
                     <TabsList>
-                        <TabsTrigger value="prices">Live Market Prices</TabsTrigger>
-                        <TabsTrigger value="predict">Price Prediction</TabsTrigger>
+                        <TabsTrigger value="prices">{t('currentPrice')}</TabsTrigger>
+                        <TabsTrigger value="predict">{t('predictedPrice')}</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="prices">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Recent Market Prices</CardTitle>
-                                <CardDescription>Latest arrivals and modal prices from mandis across India.</CardDescription>
+                                <CardTitle>{t('currentPrice')}</CardTitle>
+                                <CardDescription>{t('realTimeMarketData')}</CardDescription>
                                 <div className="flex gap-4 mt-4 flex-wrap">
                                     <Input
-                                        placeholder="Filter by State"
+                                        placeholder={t('selectCrop')}
                                         value={searchState}
                                         onChange={(e) => setSearchState(e.target.value)}
                                         className="max-w-xs"
                                     />
                                     <Input
-                                        placeholder="Filter by District"
+                                        placeholder={t('selectMandi')}
                                         value={searchDistrict}
                                         onChange={(e) => setSearchDistrict(e.target.value)}
                                         className="max-w-xs"
                                     />
                                     <Button onClick={fetchPrices} disabled={loading}>
                                         {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
-                                        Filter
+                                        {t('filter')}
                                     </Button>
                                     <Button variant="outline" onClick={handleGeolocation} disabled={locating}>
                                         {locating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MapPin className="mr-2 h-4 w-4" />}
-                                        Use My Location
+                                        {t('location')}
                                     </Button>
                                 </div>
                             </CardHeader>
@@ -215,20 +217,20 @@ const MandiPrices = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
-                                                <TableHead>Date</TableHead>
-                                                <TableHead>State</TableHead>
-                                                <TableHead>District</TableHead>
-                                                <TableHead>Market</TableHead>
-                                                <TableHead>Commodity</TableHead>
-                                                <TableHead>Variety</TableHead>
-                                                <TableHead className="text-right">Price (₹/Qtl)</TableHead>
+                                                <TableHead>{t('date')}</TableHead>
+                                                <TableHead>{t('location')}</TableHead>
+                                                <TableHead>{t('selectMandi')}</TableHead>
+                                                <TableHead>{t('market')}</TableHead>
+                                                <TableHead>{t('selectCrop')}</TableHead>
+                                                <TableHead>{t('stage')}</TableHead>
+                                                <TableHead className="text-right">{t('currentPrice')} (₹/Qtl)</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {prices.length === 0 ? (
                                                 <TableRow>
                                                     <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                                                        {loading ? "Loading data..." : "No data found. Try adjusting filters or check backend connection."}
+                                                        {loading ? t('loading') : t('noPriceData')}
                                                     </TableCell>
                                                 </TableRow>
                                             ) : (
@@ -255,42 +257,42 @@ const MandiPrices = () => {
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Predict Future Prices</CardTitle>
-                                    <CardDescription>Enter crop details to get a 7-day price forecast.</CardDescription>
+                                    <CardTitle>{t('predictedPrice')}</CardTitle>
+                                    <CardDescription>{t('realTimeMarketData')}</CardDescription>
                                     <Button variant="outline" size="sm" onClick={handleGeolocation} disabled={locating} className="w-fit mt-2">
                                         {locating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MapPin className="mr-2 h-4 w-4" />}
-                                        Auto-Detect Location
+                                        {t('location')}
                                     </Button>
                                 </CardHeader>
                                 <CardContent>
                                     <form onSubmit={handlePredict} className="space-y-4">
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label>State</Label>
+                                                <Label>{t('location')}</Label>
                                                 <Input required placeholder="e.g. Assam" value={predState} onChange={e => setPredState(e.target.value)} />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label>District</Label>
+                                                <Label>{t('selectMandi')}</Label>
                                                 <Input required placeholder="e.g. Nagaon" value={predDistrict} onChange={e => setPredDistrict(e.target.value)} />
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label>Soil Type</Label>
+                                                <Label>{t('soilType')}</Label>
                                                 <Input placeholder="e.g. Alluvial" value={predSoil} onChange={e => setPredSoil(e.target.value)} />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label>Market</Label>
+                                                <Label>{t('market')}</Label>
                                                 <Input required placeholder="e.g. Dhing APMC" value={predMarket} onChange={e => setPredMarket(e.target.value)} />
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label>Commodity</Label>
+                                                <Label>{t('selectCrop')}</Label>
                                                 <Input required placeholder="e.g. Jute" value={predCommodity} onChange={e => setPredCommodity(e.target.value)} />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label>Variety</Label>
+                                                <Label>{t('stage')}</Label>
                                                 <Input required placeholder="e.g. TD-5" value={predVariety} onChange={e => setPredVariety(e.target.value)} />
                                             </div>
                                         </div>
@@ -298,12 +300,12 @@ const MandiPrices = () => {
                                             {predictionLoading ? (
                                                 <>
                                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                    Analyzing Trends...
+                                                    {t('loading')}
                                                 </>
                                             ) : (
                                                 <>
                                                     <TrendingUp className="mr-2 h-4 w-4" />
-                                                    Predict Prices
+                                                    {t('predictedPrice')}
                                                 </>
                                             )}
                                         </Button>
@@ -313,8 +315,8 @@ const MandiPrices = () => {
 
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Forecast Results</CardTitle>
-                                    <CardDescription>Expected modal prices for the next 7 days.</CardDescription>
+                                    <CardTitle>{t('priceHistory')}</CardTitle>
+                                    <CardDescription>{t('realTimeMarketData')}</CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     {predictions.length > 0 ? (
@@ -322,8 +324,8 @@ const MandiPrices = () => {
                                             <Table>
                                                 <TableHeader>
                                                     <TableRow>
-                                                        <TableHead>Date</TableHead>
-                                                        <TableHead className="text-right">Predicted Price</TableHead>
+                                                        <TableHead>{t('date')}</TableHead>
+                                                        <TableHead className="text-right">{t('predictedPrice')}</TableHead>
                                                     </TableRow>
                                                 </TableHeader>
                                                 <TableBody>
@@ -336,13 +338,13 @@ const MandiPrices = () => {
                                                 </TableBody>
                                             </Table>
                                             <p className="text-xs text-muted-foreground text-center mt-4">
-                                                *Predictions are based on historical data and current market trends.
+                                                *{t('noPriceData')}
                                             </p>
                                         </div>
                                     ) : (
                                         <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground border-2 border-dashed rounded-lg">
                                             <TrendingUp className="h-12 w-12 mb-4 opacity-20" />
-                                            <p>Enter details to view predictions</p>
+                                            <p>{t('noPriceData')}</p>
                                         </div>
                                     )}
                                 </CardContent>

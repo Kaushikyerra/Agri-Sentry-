@@ -3,15 +3,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Sprout, Droplets, FlaskConical, Cloud, TrendingUp, IndianRupee, Sparkles, Activity } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Sprout, Droplets, FlaskConical, Cloud, IndianRupee, Sparkles, Activity, Bell } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import { useFarm } from "@/contexts/FarmContext";
 import { LiveAssistant } from "@/components/LiveAssistant";
+import { EnhancedWeatherWidget } from "@/components/EnhancedWeatherWidget";
+import { AISchemeRecommendations } from "@/components/AISchemeRecommendations";
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const { currentData } = useFarm();
   const [user, setUser] = useState<any>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [stats, setStats] = useState({
     totalFields: 0,
     nextIrrigation: "Loading...",
@@ -24,6 +29,7 @@ const Dashboard = () => {
   useEffect(() => {
     checkUser();
     loadDashboardData();
+    loadUserProfile();
   }, []);
 
   const checkUser = async () => {
@@ -35,73 +41,113 @@ const Dashboard = () => {
     setUser(session.user);
   };
 
+  const loadUserProfile = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+      
+      setUserProfile(data);
+    } catch (error) {
+      console.log('Profile loading error:', error);
+    }
+  };
+
   const loadDashboardData = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
-    const { data: crops } = await supabase
-      .from('crops')
-      .select('*')
-      .eq('user_id', session.user.id);
+    try {
+      const { data: crops, error: cropsError } = await supabase
+        .from('crops')
+        .select('*')
+        .eq('user_id', session.user.id);
 
-    const { data: recommendations } = await supabase
-      .from('recommendations')
-      .select('*')
-      .eq('user_id', session.user.id)
-      .eq('status', 'pending');
+      if (cropsError && cropsError.code !== 'PGRST116') {
+        console.log('Crops table not ready:', cropsError.message);
+      }
 
-    const { data: nextIrrig } = await supabase
-      .from('irrigation_logs')
-      .select('*')
-      .eq('user_id', session.user.id)
-      .order('irrigation_date', { ascending: false })
-      .limit(1)
-      .single();
+      const { data: recommendations, error: recsError } = await supabase
+        .from('recommendations')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .eq('status', 'pending');
 
-    setStats({
-      totalFields: crops?.length || 0,
-      nextIrrigation: nextIrrig ? "Next 4 hours" : "Not scheduled",
-      weatherTemp: "28°C",
-      activeRecommendations: recommendations?.length || 0
-    });
+      if (recsError && recsError.code !== 'PGRST116') {
+        console.log('Recommendations table not ready:', recsError.message);
+      }
+
+      const { data: nextIrrig, error: irrigError } = await supabase
+        .from('irrigation_logs')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .order('irrigation_date', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (irrigError && irrigError.code !== 'PGRST116') {
+        console.log('Irrigation logs table not ready:', irrigError.message);
+      }
+
+      setStats({
+        totalFields: crops?.length || 0,
+        nextIrrigation: nextIrrig ? "Next 4 hours" : t('notScheduled'),
+        weatherTemp: "28°C",
+        activeRecommendations: recommendations?.length || 0
+      });
+    } catch (error) {
+      console.log('Dashboard data loading error:', error);
+      // Set default values if tables don't exist
+      setStats({
+        totalFields: 0,
+        nextIrrigation: t('notScheduled'),
+        weatherTemp: "28°C",
+        activeRecommendations: 0
+      });
+    }
   };
 
   const quickAccessCards = [
     {
-      title: "My Fields",
-      description: "Manage crops & land",
+      titleKey: "myFields",
+      descriptionKey: "manageCrops",
       icon: Sprout,
       color: "text-green-600",
       bgIcon: "bg-green-100",
       path: "/my-fields"
     },
     {
-      title: "Irrigation",
-      description: "Water management",
+      titleKey: "irrigation",
+      descriptionKey: "waterManagement",
       icon: Droplets,
       color: "text-blue-600",
       bgIcon: "bg-blue-100",
       path: "/irrigation"
     },
     {
-      title: "Fertilizer",
-      description: "Nutrient planning",
+      titleKey: "fertilizer",
+      descriptionKey: "nutrientPlanning",
       icon: FlaskConical,
       color: "text-orange-600",
       bgIcon: "bg-orange-100",
       path: "/fertilizer"
     },
     {
-      title: "Mandi Prices",
-      description: "Market Rates & AI",
+      titleKey: "mandiPrices",
+      descriptionKey: "marketRates",
       icon: IndianRupee,
       color: "text-emerald-600",
       bgIcon: "bg-emerald-100",
       path: "/mandi-prices"
     },
     {
-      title: "Activity Log",
-      description: "Farm history",
+      titleKey: "activityLog",
+      descriptionKey: "farmHistory",
       icon: Activity,
       color: "text-violet-600",
       bgIcon: "bg-violet-100",
@@ -115,11 +161,24 @@ const Dashboard = () => {
 
       <div className="pt-24 px-4 pb-12 max-w-7xl mx-auto">
         {/* Header */}
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+              {t('hello')}, {userProfile?.name || 'Kisan'}
+            </h1>
+            <p className="text-gray-500 mt-1">{userProfile?.location || 'Pune, Maharashtra'}</p>
+          </div>
+          <Button variant="outline" size="icon" className="relative">
+            <Bell className="w-5 h-5" />
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+              {stats.activeRecommendations}
+            </span>
+          </Button>
+        </div>
+
+        {/* Enhanced Weather Widget */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
-            Farm Dashboard
-          </h1>
-          <p className="text-gray-500 mt-1">Real-time insights for your smart farm.</p>
+          <EnhancedWeatherWidget location={userProfile?.location || 'Pune'} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -130,7 +189,7 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <Card className="bg-white border shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-500">Total Fields</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-500">{t('totalFields')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-3">
@@ -147,7 +206,7 @@ const Dashboard = () => {
                 onClick={() => navigate('/irrigation')}
               >
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-500 group-hover:text-blue-600 transition-colors">Next Irrigation</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-500 group-hover:text-blue-600 transition-colors">{t('nextIrrigation')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-3">
@@ -164,7 +223,7 @@ const Dashboard = () => {
                 onClick={() => navigate('/weather')}
               >
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-500 group-hover:text-sky-600 transition-colors">Weather (Live)</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-500 group-hover:text-sky-600 transition-colors">{t('weather')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-3">
@@ -173,7 +232,7 @@ const Dashboard = () => {
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-gray-900">{currentData.temperature}°C</div>
-                      <p className="text-xs text-gray-500">Humidity: {currentData.humidity}%</p>
+                      <p className="text-xs text-gray-500">{t('humidity')}: {currentData.humidity}%</p>
                     </div>
                   </div>
                 </CardContent>
@@ -184,12 +243,12 @@ const Dashboard = () => {
             <div>
               <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-800">
                 <Sparkles className="w-5 h-5 text-amber-500" />
-                Quick Actions
+                {t('quickActions')}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {quickAccessCards.map((card) => (
                   <Card
-                    key={card.title}
+                    key={card.titleKey}
                     className="bg-white border hover:border-gray-300 shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer group"
                     onClick={() => navigate(card.path)}
                   >
@@ -199,9 +258,9 @@ const Dashboard = () => {
                       </div>
                       <div>
                         <CardTitle className="text-base text-gray-900 group-hover:text-primary transition-colors">
-                          {card.title}
+                          {t(card.titleKey)}
                         </CardTitle>
-                        <p className="text-sm text-gray-500">{card.description}</p>
+                        <p className="text-sm text-gray-500">{t(card.descriptionKey)}</p>
                       </div>
                     </CardHeader>
                   </Card>
@@ -210,16 +269,19 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Right Column: Assistant */}
+          {/* Right Column: Assistant & Schemes */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="sticky top-24">
+            <div className="sticky top-24 space-y-6">
               <LiveAssistant />
 
+              {/* AI Scheme Recommendations */}
+              <AISchemeRecommendations />
+
               {/* Additional Info Box */}
-              <div className="mt-6 p-5 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-100">
-                <h3 className="font-semibold text-green-800 mb-2">Did you know?</h3>
+              <div className="p-5 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-100">
+                <h3 className="font-semibold text-green-800 mb-2">{t('aiName')} {t('aiTips')}</h3>
                 <p className="text-sm text-green-700 leading-relaxed">
-                  You can ask the assistant about real-time mandi prices or weather forecasts just by speaking naturally.
+                  {t('aiTipsDescription', { aiName: t('aiName') })}
                 </p>
               </div>
             </div>

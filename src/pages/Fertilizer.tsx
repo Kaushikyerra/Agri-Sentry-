@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ interface Crop {
 }
 
 const Fertilizer = () => {
+  const { t } = useTranslation();
   const [logs, setLogs] = useState<FertilizerLog[]>([]);
   const [crops, setCrops] = useState<Crop[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -88,14 +90,14 @@ const Fertilizer = () => {
 
     if (error) {
       toast({
-        title: "Error",
-        description: "Failed to log fertilization",
+        title: t('error'),
+        description: t('fertilizerLogError'),
         variant: "destructive"
       });
     } else {
       toast({
-        title: "Success",
-        description: "Fertilization logged successfully"
+        title: t('success'),
+        description: t('fertilizerLogSuccess')
       });
       setIsDialogOpen(false);
       setFormData({ crop_id: "", fertilizer_type: "", amount_kg: "", notes: "", application_date: new Date().toISOString().split('T')[0] });
@@ -105,7 +107,7 @@ const Fertilizer = () => {
 
   const getCropName = (cropId: string) => {
     const crop = crops.find(c => c.id === cropId);
-    return crop ? crop.name : "Unknown Field";
+    return crop ? crop.name : t('unknownField');
   };
 
   const getFertilizerColor = (type: string) => {
@@ -124,28 +126,28 @@ const Fertilizer = () => {
             <div>
               <Button variant="ghost" onClick={() => navigate("/dashboard")} className="mb-4">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Dashboard
+                {t('backToDashboard')}
               </Button>
-              <h1 className="text-4xl font-bold">Fertilizer Management</h1>
-              <p className="text-muted-foreground">Track nutrient application and optimize crop growth</p>
+              <h1 className="text-4xl font-bold">{t('fertilizerManagement')}</h1>
+              <p className="text-muted-foreground">{t('trackNutrientUsage')}</p>
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-gradient-field">
                   <Plus className="h-4 w-4 mr-2" />
-                  Log Fertilizer
+                  {t('logFertilizer')}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Log Fertilizer Application</DialogTitle>
+                  <DialogTitle>{t('logFertilizerActivity')}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   <div>
-                    <Label htmlFor="crop">Field (Optional)</Label>
+                    <Label htmlFor="crop">{t('fieldOptional')}</Label>
                     <Select value={formData.crop_id} onValueChange={(value) => setFormData({ ...formData, crop_id: value })}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select field" />
+                        <SelectValue placeholder={t('selectField')} />
                       </SelectTrigger>
                       <SelectContent>
                         {crops.map(crop => (
@@ -155,10 +157,10 @@ const Fertilizer = () => {
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="type">Fertilizer Type</Label>
+                    <Label htmlFor="type">{t('fertilizerType')}</Label>
                     <Select value={formData.fertilizer_type} onValueChange={(value) => setFormData({ ...formData, fertilizer_type: value })}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select fertilizer type" />
+                        <SelectValue placeholder={t('selectFertilizerType')} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="nitrogen">Nitrogen (N)</SelectItem>
@@ -171,17 +173,17 @@ const Fertilizer = () => {
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="amount">Amount (kg)</Label>
+                    <Label htmlFor="amount">{t('quantity')}</Label>
                     <Input
                       id="amount"
                       type="number"
                       value={formData.amount_kg}
                       onChange={(e) => setFormData({ ...formData, amount_kg: e.target.value })}
-                      placeholder="e.g., 50"
+                      placeholder={t('quantityPlaceholder')}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="date">Application Date</Label>
+                    <Label htmlFor="date">{t('plantingDate')}</Label>
                     <Input
                       id="date"
                       type="date"
@@ -190,16 +192,16 @@ const Fertilizer = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="notes">Notes (Optional)</Label>
+                    <Label htmlFor="notes">{t('notes')}</Label>
                     <Input
                       id="notes"
                       value={formData.notes}
                       onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                      placeholder="Add any notes..."
+                      placeholder={t('notesPlaceholder')}
                     />
                   </div>
                   <Button onClick={handleAddLog} className="w-full bg-gradient-field">
-                    Log Fertilizer Application
+                    {t('logFertilizerButton')}
                   </Button>
                 </div>
               </DialogContent>
@@ -212,22 +214,15 @@ const Fertilizer = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FlaskConical className="h-5 w-5 text-fertilizer" />
-                  Smart Recommendation
+                  {t('smartRecommendation')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-start gap-3 p-3 rounded-lg bg-card">
                   <CalendarIcon className="h-5 w-5 text-primary mt-1" />
                   <div>
-                    <p className="font-semibold">Add Nitrogen fertilizer in 2 days</p>
-                    <p className="text-sm text-muted-foreground">Your wheat crops are entering flowering stage and need nutrient boost</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-card">
-                  <AlertTriangle className="h-5 w-5 text-sun mt-1" />
-                  <div>
-                    <p className="font-semibold">Weather alert</p>
-                    <p className="text-sm text-muted-foreground">Rain forecast Wednesday - apply fertilizer before or wait until Friday</p>
+                    <p className="font-semibold">{t('nitrogenLow')}</p>
+                    <p className="text-sm text-muted-foreground">{t('applyFertilizerRecommendation')}</p>
                   </div>
                 </div>
               </CardContent>
@@ -237,7 +232,7 @@ const Fertilizer = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FlaskConical className="h-5 w-5 text-primary" />
-                  Recent Applications
+                  {t('nutrientUsageLastDays')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -246,18 +241,18 @@ const Fertilizer = () => {
                     <div className="font-stats text-4xl font-bold text-fertilizer">
                       {logs.slice(0, 7).reduce((sum, log) => sum + log.amount_kg, 0)} kg
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">Last 7 days</p>
+                    <p className="text-sm text-muted-foreground mt-1">{t('totalFertilizerUsed')}</p>
                   </div>
                   <div className="grid grid-cols-2 gap-4 pt-4 border-t">
                     <div className="text-center">
                       <p className="text-2xl font-bold text-primary">{logs.slice(0, 7).length}</p>
-                      <p className="text-xs text-muted-foreground">Applications</p>
+                      <p className="text-xs text-muted-foreground">{t('applicationEvents')}</p>
                     </div>
                     <div className="text-center">
                       <p className="text-2xl font-bold text-primary">
                         {logs.length > 0 ? Math.round(logs.slice(0, 7).reduce((sum, log) => sum + log.amount_kg, 0) / logs.slice(0, 7).length) : 0} kg
                       </p>
-                      <p className="text-xs text-muted-foreground">Avg per event</p>
+                      <p className="text-xs text-muted-foreground">{t('avgPerApplication')}</p>
                     </div>
                   </div>
                 </div>
@@ -268,7 +263,7 @@ const Fertilizer = () => {
           {/* Fertilization History */}
           <Card className="border-2">
             <CardHeader>
-              <CardTitle>Application History</CardTitle>
+              <CardTitle>{t('recentFertilizerHistory')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -300,7 +295,7 @@ const Fertilizer = () => {
               {logs.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
                   <FlaskConical className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p>No fertilization logs yet</p>
+                  <p>{t('noFertilizerLogs')}</p>
                 </div>
               )}
             </CardContent>

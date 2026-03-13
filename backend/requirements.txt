@@ -14,3 +14,5 @@ apscheduler
 google-generativeai
 pytz
 python-dateutil
+websockets
+python-socketio

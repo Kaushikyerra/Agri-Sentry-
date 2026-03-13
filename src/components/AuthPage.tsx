@@ -94,7 +94,7 @@ const AuthPage = () => {
 
         toast({
           title: "Account created!",
-          description: "Welcome to AgroAdvisor. You can now start managing your farm.",
+          description: "Welcome to Kisan Shayak. You can now start managing your farm.",
         });
         window.location.href = "/dashboard";
       }
@@ -119,7 +119,7 @@ const AuthPage = () => {
             </div>
           </div>
           <CardTitle className="text-2xl font-montserrat">
-            {isLogin ? "Welcome Back" : "Join AgroAdvisor"}
+            {isLogin ? "Welcome Back" : "Join Kisan Shayak"}
           </CardTitle>
           <CardDescription>
             {isLogin

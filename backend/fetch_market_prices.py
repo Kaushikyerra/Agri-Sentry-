@@ -206,7 +206,7 @@ def fetch_and_process():
                     if last_date < cutoff_date:
                         print("Reached data older than cutoff. Stopping.")
                         break
-                except:
+                except Exception:
                     pass
 
             offset += limit

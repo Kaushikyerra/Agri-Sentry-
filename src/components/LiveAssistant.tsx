@@ -1,37 +1,62 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useFarm } from '@/contexts/FarmContext';
 import { GoogleGenAI, LiveServerMessage, Modality } from '@google/genai';
 import { Mic, MicOff, Volume2, XCircle, Sparkles } from 'lucide-react';
-import { createPcmBlob, decodeAudioData } from '@/utils/audioUtils';
+import { arrayBufferToBase64, decodeAudioData } from '@/utils/audioUtils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
+const PCM_WORKLET_CODE = `
+class PCMProcessor extends AudioWorkletProcessor {
+    process(inputs) {
+        const input = inputs[0];
+        if (input && input[0] && input[0].length > 0) {
+            this.port.postMessage(input[0].slice());
+        }
+        return true;
+    }
+}
+registerProcessor('pcm-processor', PCMProcessor);
+`;
+
 export const LiveAssistant: React.FC = () => {
+    const { t, i18n } = useTranslation();
     const { currentData, location } = useFarm();
     const [isConnected, setIsConnected] = useState(false);
-    const [isSpeaking, setIsSpeaking] = useState(false); // User speaking
-    const [isAIResponding, setIsAIResponding] = useState(false); // AI speaking
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const [isAIResponding, setIsAIResponding] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Refs for audio handling
     const inputAudioContextRef = useRef<AudioContext | null>(null);
     const outputAudioContextRef = useRef<AudioContext | null>(null);
     const streamRef = useRef<MediaStream | null>(null);
-    const processorRef = useRef<ScriptProcessorNode | null>(null);
+    const workletNodeRef = useRef<AudioWorkletNode | null>(null);
     const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
 
-    // Ref for cleanup
-    const sessionRef = useRef<any>(null); // To store session object
+    const sessionRef = useRef<any>(null);
     const nextStartTimeRef = useRef<number>(0);
     const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
+    const isUserClosingRef = useRef(false);
 
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
     const stopConnection = () => {
+        isUserClosingRef.current = true;
+
         if (sessionRef.current) {
-            // Close session if possible
+            try { sessionRef.current.close(); } catch (e) { }
+            sessionRef.current = null;
         }
 
+        if (workletNodeRef.current) {
+            try { workletNodeRef.current.disconnect(); } catch (e) { }
+            workletNodeRef.current = null;
+        }
+        if (sourceRef.current) {
+            try { sourceRef.current.disconnect(); } catch (e) { }
+            sourceRef.current = null;
+        }
         if (streamRef.current) {
             streamRef.current.getTracks().forEach(track => track.stop());
             streamRef.current = null;
@@ -56,20 +81,42 @@ export const LiveAssistant: React.FC = () => {
 
     const startConnection = async () => {
         setError(null);
+        isUserClosingRef.current = false;
         try {
-            if (!apiKey) throw new Error("API Key not found");
+            if (!apiKey) throw new Error("API Key not found. Set VITE_GEMINI_API_KEY in .env");
 
             const ai = new GoogleGenAI({ apiKey });
 
-            // Initialize Audio Contexts
             inputAudioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
             outputAudioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
+
+            const workletBlob = new Blob([PCM_WORKLET_CODE], { type: 'application/javascript' });
+            const workletUrl = URL.createObjectURL(workletBlob);
+            await inputAudioContextRef.current.audioWorklet.addModule(workletUrl);
+            URL.revokeObjectURL(workletUrl);
 
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             streamRef.current = stream;
 
+            const languageInstructions: { [key: string]: string } = {
+                'hi': 'Speak ONLY in Hindi (हिंदी). Use Devanagari script.',
+                'te': 'Speak ONLY in Telugu (తెలుగు). Use Telugu script.',
+                'ta': 'Speak ONLY in Tamil (தமிழ்). Use Tamil script.',
+                'ml': 'Speak ONLY in Malayalam (മലയാളം). Use Malayalam script.',
+                'kn': 'Speak ONLY in Kannada (ಕನ್ನಡ). Use Kannada script.',
+                'pa': 'Speak ONLY in Punjabi (ਪੰਜਾਬੀ). Use Gurmukhi script.',
+                'en': 'Speak in English.',
+            };
+
+            const currentLanguage = i18n.language || 'en';
+            const languageInstruction = languageInstructions[currentLanguage] || languageInstructions['en'];
+
             const systemInstruction = `
-        You are 'Kisan Sahayak', a friendly and expert agricultural assistant for a farmer in ${location}.
+        You are 'Kisan Sahayak' (किसान सहायक), a friendly and expert agricultural assistant for a farmer in ${location}.
+        
+        CRITICAL LANGUAGE INSTRUCTION: ${languageInstruction}
+        DO NOT mix languages. Respond ENTIRELY in the specified language.
+        
         Current Field Conditions:
         - Soil Moisture: ${currentData.soilMoisture}%
         - Temperature: ${currentData.temperature}°C
@@ -77,13 +124,12 @@ export const LiveAssistant: React.FC = () => {
         - EC: ${currentData.ec} dS/m
         
         Capabilities:
-        1. Speak in Telugu, Hindi, or English based on the user's language.
-        2. Give practical advice on irrigation, pests, and market prices (simulated).
-        3. Be concise and encouraging.
+        1. Give practical advice on irrigation, pests, and market prices.
+        2. Be concise, encouraging, and speak naturally in the farmer's language.
+        3. Use simple agricultural terms that farmers understand.
       `;
 
-            // Establish Connection
-            const sessionPromise = ai.live.connect({
+            const session = await ai.live.connect({
                 model: 'gemini-2.5-flash-native-audio-preview-12-2025',
                 config: {
                     responseModalities: [Modality.AUDIO],
@@ -96,41 +142,13 @@ export const LiveAssistant: React.FC = () => {
                     onopen: () => {
                         console.log("Session opened");
                         setIsConnected(true);
-
-                        // Setup Input Stream
-                        if (!inputAudioContextRef.current || !streamRef.current) return;
-
-                        const source = inputAudioContextRef.current.createMediaStreamSource(streamRef.current);
-                        sourceRef.current = source;
-
-                        // ScriptProcessor is deprecated but widely supported for this raw PCM access pattern in demos
-                        const processor = inputAudioContextRef.current.createScriptProcessor(4096, 1, 1);
-                        processorRef.current = processor;
-
-                        processor.onaudioprocess = (e) => {
-                            const inputData = e.inputBuffer.getChannelData(0);
-                            const pcmBlob = createPcmBlob(inputData);
-
-                            sessionPromise.then(session => {
-                                session.sendRealtimeInput({ media: pcmBlob });
-                            });
-
-                            // Simple VAD visualization
-                            const vol = inputData.reduce((acc, val) => acc + Math.abs(val), 0) / inputData.length;
-                            setIsSpeaking(vol > 0.01);
-                        };
-
-                        source.connect(processor);
-                        processor.connect(inputAudioContextRef.current.destination);
                     },
                     onmessage: async (message: LiveServerMessage) => {
-                        // Handle Audio Output
                         const base64Audio = message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
                         if (base64Audio && outputAudioContextRef.current) {
                             setIsAIResponding(true);
                             try {
                                 const ctx = outputAudioContextRef.current;
-                                // Sync start time
                                 nextStartTimeRef.current = Math.max(nextStartTimeRef.current, ctx.currentTime);
 
                                 const audioBuffer = await decodeAudioData(
@@ -138,37 +156,41 @@ export const LiveAssistant: React.FC = () => {
                                     ctx
                                 );
 
-                                const source = ctx.createBufferSource();
-                                source.buffer = audioBuffer;
-                                source.connect(ctx.destination);
+                                const bufferSource = ctx.createBufferSource();
+                                bufferSource.buffer = audioBuffer;
+                                bufferSource.connect(ctx.destination);
 
-                                source.onended = () => {
-                                    sourcesRef.current.delete(source);
+                                bufferSource.onended = () => {
+                                    sourcesRef.current.delete(bufferSource);
                                     if (sourcesRef.current.size === 0) setIsAIResponding(false);
                                 };
 
-                                source.start(nextStartTimeRef.current);
+                                bufferSource.start(nextStartTimeRef.current);
                                 nextStartTimeRef.current += audioBuffer.duration;
-                                sourcesRef.current.add(source);
+                                sourcesRef.current.add(bufferSource);
                             } catch (err) {
                                 console.error("Audio decode error", err);
                             }
                         }
 
-                        // Handle Interruption
                         if (message.serverContent?.interrupted) {
-                            console.log("Interrupted");
                             sourcesRef.current.forEach(src => src.stop());
                             sourcesRef.current.clear();
                             nextStartTimeRef.current = 0;
                             setIsAIResponding(false);
                         }
                     },
-                    onclose: () => {
-                        console.log("Session closed");
+                    onclose: (e: any) => {
+                        console.log("Session closed", e?.reason);
+                        if (!isUserClosingRef.current) {
+                            const reason = e?.reason || "Connection closed by server";
+                            setError(`Session ended: ${reason}. Please try again.`);
+                        }
                         setIsConnected(false);
+                        setIsSpeaking(false);
+                        setIsAIResponding(false);
                     },
-                    onerror: (err) => {
+                    onerror: (err: any) => {
                         console.error("Session error", err);
                         setError("Connection error. Please retry.");
                         stopConnection();
@@ -176,15 +198,48 @@ export const LiveAssistant: React.FC = () => {
                 }
             });
 
-            sessionRef.current = sessionPromise;
+            sessionRef.current = session;
+
+            if (!inputAudioContextRef.current || !streamRef.current) return;
+
+            const source = inputAudioContextRef.current.createMediaStreamSource(streamRef.current);
+            sourceRef.current = source;
+
+            const workletNode = new AudioWorkletNode(inputAudioContextRef.current, 'pcm-processor');
+            workletNodeRef.current = workletNode;
+
+            workletNode.port.onmessage = (e) => {
+                const inputData: Float32Array = e.data;
+
+                const vol = inputData.reduce((acc, val) => acc + Math.abs(val), 0) / inputData.length;
+                setIsSpeaking(vol > 0.01);
+
+                const int16 = new Int16Array(inputData.length);
+                for (let i = 0; i < inputData.length; i++) {
+                    int16[i] = Math.max(-32768, Math.min(32767, inputData[i] * 32768));
+                }
+                const base64Data = arrayBufferToBase64(int16.buffer);
+
+                if (sessionRef.current) {
+                    sessionRef.current.sendRealtimeInput({
+                        audio: {
+                            data: base64Data,
+                            mimeType: 'audio/pcm;rate=16000',
+                        }
+                    });
+                }
+            };
+
+            source.connect(workletNode);
+            workletNode.connect(inputAudioContextRef.current.destination);
 
         } catch (e: any) {
             console.error(e);
             setError(e.message || "Failed to start assistant");
+            stopConnection();
         }
     };
 
-    // Helper for base64 decode needed inside component to avoid import issues if any
     function base64ToUint8Array(base64: string): Uint8Array {
         const binaryString = atob(base64);
         const len = binaryString.length;
@@ -195,7 +250,6 @@ export const LiveAssistant: React.FC = () => {
         return bytes;
     }
 
-    // Cleanup on unmount
     useEffect(() => {
         return () => {
             stopConnection();
@@ -204,26 +258,25 @@ export const LiveAssistant: React.FC = () => {
 
     return (
         <Card className={`border-2 transition-all duration-500 overflow-hidden ${isConnected
-                ? "border-green-400 bg-gradient-to-br from-green-50 to-white shadow-glow"
-                : "border-primary/20 hover:border-primary/40 bg-card"
+            ? "border-green-400 bg-gradient-to-br from-green-50 to-white shadow-glow"
+            : "border-primary/20 hover:border-primary/40 bg-card"
             }`}>
             <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-lg">
                     <Sparkles className={`w-5 h-5 ${isConnected ? "text-green-600 animate-pulse" : "text-primary"}`} />
-                    Kisan Sahayak (Voice AI)
+                    {t('voiceAssistant')}
                 </CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-6">
                 <div className="flex flex-col items-center justify-center py-4">
-                    {/* Visualizer Circle */}
                     <div className={`w-32 h-32 rounded-full flex items-center justify-center transition-all duration-500 ${isConnected
-                            ? isAIResponding
-                                ? "bg-gradient-to-tr from-green-400 to-green-300 shadow-[0_0_30px_rgba(34,197,94,0.6)] scale-110"
-                                : isSpeaking
-                                    ? "bg-blue-100 shadow-[0_0_20px_rgba(59,130,246,0.4)] scale-105"
-                                    : "bg-green-100 border-4 border-green-200"
-                            : "bg-secondary/10"
+                        ? isAIResponding
+                            ? "bg-gradient-to-tr from-green-400 to-green-300 shadow-[0_0_30px_rgba(34,197,94,0.6)] scale-110"
+                            : isSpeaking
+                                ? "bg-blue-100 shadow-[0_0_20px_rgba(59,130,246,0.4)] scale-105"
+                                : "bg-green-100 border-4 border-green-200"
+                        : "bg-secondary/10"
                         }`}>
                         {isConnected ? (
                             isAIResponding ? (
@@ -240,7 +293,7 @@ export const LiveAssistant: React.FC = () => {
                         {isConnected && (
                             <span className={`text-sm font-medium px-3 py-1 rounded-full transition-colors ${isAIResponding ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
                                 }`}>
-                                {isAIResponding ? "Speaking..." : "Listening..."}
+                                {isAIResponding ? t('speaking') : t('listening')}
                             </span>
                         )}
                     </div>
@@ -253,7 +306,7 @@ export const LiveAssistant: React.FC = () => {
                             className="w-full bg-gradient-earth hover:opacity-90 transition-all shadow-md text-white font-semibold py-6 text-lg rounded-xl"
                         >
                             <Mic className="w-5 h-5 mr-2" />
-                            Start Conversation
+                            {t('startConversation')}
                         </Button>
                     ) : (
                         <Button
@@ -262,7 +315,7 @@ export const LiveAssistant: React.FC = () => {
                             className="w-full shadow-md py-6 text-lg rounded-xl"
                         >
                             <XCircle className="w-5 h-5 mr-2" />
-                            End Call
+                            {t('endCall')}
                         </Button>
                     )}
 

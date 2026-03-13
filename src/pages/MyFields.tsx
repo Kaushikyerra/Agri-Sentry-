@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ interface Field {
 }
 
 const MyFields = () => {
+  const { t } = useTranslation();
   const [fields, setFields] = useState<Field[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -78,14 +80,14 @@ const MyFields = () => {
 
     if (error) {
       toast({
-        title: "Error",
-        description: "Failed to add field",
+        title: t('error'),
+        description: t('fieldAddError'),
         variant: "destructive"
       });
     } else {
       toast({
-        title: "Success",
-        description: "Field added successfully"
+        title: t('success'),
+        description: t('fieldAddedSuccess')
       });
       setIsDialogOpen(false);
       setFormData({ name: "", crop_type: "", field_area: "", planting_date: new Date().toISOString().split('T')[0] });
@@ -96,7 +98,7 @@ const MyFields = () => {
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from('crops').delete().eq('id', id);
     if (!error) {
-      toast({ title: "Field deleted successfully" });
+      toast({ title: t('fieldDeletedSuccess') });
       loadFields();
     }
   };
@@ -119,60 +121,60 @@ const MyFields = () => {
             <div>
               <Button variant="ghost" onClick={() => navigate("/dashboard")} className="mb-4">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Dashboard
+                {t('backToDashboard')}
               </Button>
-              <h1 className="text-4xl font-bold">My Fields</h1>
-              <p className="text-muted-foreground">Manage all your crops and fields</p>
+              <h1 className="text-4xl font-bold">{t('myFieldsTitle')}</h1>
+              <p className="text-muted-foreground">{t('manageFieldsDescription')}</p>
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-gradient-field">
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Field
+                  {t('addField')}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Add New Field</DialogTitle>
+                  <DialogTitle>{t('addNewField')}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   <div>
-                    <Label htmlFor="name">Field Name</Label>
+                    <Label htmlFor="name">{t('fieldName')}</Label>
                     <Input
                       id="name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="e.g., North Field A"
+                      placeholder={t('fieldNamePlaceholder')}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="crop_type">Crop Type</Label>
+                    <Label htmlFor="crop_type">{t('cropType')}</Label>
                     <Select value={formData.crop_type} onValueChange={(value) => setFormData({ ...formData, crop_type: value })}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select crop type" />
+                        <SelectValue placeholder={t('selectCropType')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="wheat">Wheat</SelectItem>
-                        <SelectItem value="corn">Corn</SelectItem>
-                        <SelectItem value="rice">Rice</SelectItem>
-                        <SelectItem value="soybean">Soybean</SelectItem>
-                        <SelectItem value="tomato">Tomato</SelectItem>
-                        <SelectItem value="potato">Potato</SelectItem>
+                        <SelectItem value="wheat">{t('wheat')}</SelectItem>
+                        <SelectItem value="corn">{t('corn')}</SelectItem>
+                        <SelectItem value="rice">{t('rice')}</SelectItem>
+                        <SelectItem value="soybean">{t('soybean')}</SelectItem>
+                        <SelectItem value="tomato">{t('tomato')}</SelectItem>
+                        <SelectItem value="potato">{t('potato')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="area">Area (hectares)</Label>
+                    <Label htmlFor="area">{t('area')}</Label>
                     <Input
                       id="area"
                       type="number"
                       value={formData.field_area}
                       onChange={(e) => setFormData({ ...formData, field_area: e.target.value })}
-                      placeholder="e.g., 2.5"
+                      placeholder={t('areaPlaceholder')}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="date">Planting Date</Label>
+                    <Label htmlFor="date">{t('plantingDate')}</Label>
                     <Input
                       id="date"
                       type="date"
@@ -181,7 +183,7 @@ const MyFields = () => {
                     />
                   </div>
                   <Button onClick={handleAddField} className="w-full bg-gradient-field">
-                    Add Field
+                    {t('addFieldButton')}
                   </Button>
                 </div>
               </DialogContent>
@@ -203,25 +205,25 @@ const MyFields = () => {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
-                      <p className="text-muted-foreground">Area</p>
+                      <p className="text-muted-foreground">{t('area')}</p>
                       <p className="font-semibold">{field.field_area} ha</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Stage</p>
+                      <p className="text-muted-foreground">{t('stage')}</p>
                       <p className="font-semibold capitalize">{field.growth_stage}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 p-3 rounded-lg bg-water/10">
                     <Droplets className="h-5 w-5 text-water" />
                     <div>
-                      <p className="text-xs text-muted-foreground">Next Irrigation</p>
-                      <p className="text-sm font-semibold">In 4 hours</p>
+                      <p className="text-xs text-muted-foreground">{t('nextIrrigation')}</p>
+                      <p className="text-sm font-semibold">{t('nextIrrigationIn')}</p>
                     </div>
                   </div>
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm" className="flex-1">
                       <Edit2 className="h-4 w-4 mr-2" />
-                      Edit
+                      {t('edit')}
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => handleDelete(field.id)}>
                       <Trash2 className="h-4 w-4" />
@@ -234,10 +236,10 @@ const MyFields = () => {
 
           {fields.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">No fields added yet</p>
+              <p className="text-muted-foreground mb-4">{t('noFieldsAdded')}</p>
               <Button onClick={() => setIsDialogOpen(true)} className="bg-gradient-field">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Your First Field
+                {t('addYourFirstField')}
               </Button>
             </div>
           )}

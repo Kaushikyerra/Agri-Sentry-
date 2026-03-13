@@ -1,4 +1,4 @@
-# 🌾 AgroAdvisor
+# 🌾 Kisan Shayak
 
 <div align="center">
   <p align="center">
@@ -16,7 +16,7 @@
 
 ## 🌟 Overview
 
-Welcome to **AgroAdvisor** - A smart agriculture advisory system designed to empower farmers with AI-driven insights. This full-stack application combines a modern React frontend with a powerful Python/FastAPI backend to provide real-time mandi prices, crop disease predictions, and personalized farming advice.
+Welcome to **Kisan Shayak** - A smart agriculture advisory system designed to empower farmers with AI-driven insights. This full-stack application combines a modern React frontend with a powerful Python/FastAPI backend to provide real-time mandi prices, crop disease predictions, and personalized farming advice.
 
 ## ✨ Features
 
