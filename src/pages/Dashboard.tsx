@@ -166,7 +166,7 @@ const Dashboard = () => {
             <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
               {t('hello')}, {userProfile?.name || 'Kisan'}
             </h1>
-            <p className="text-gray-500 mt-1">{userProfile?.location || 'Pune, Maharashtra'}</p>
+            <p className="text-gray-500 mt-1">{userProfile?.location || 'Location not set'}</p>
           </div>
           <Button variant="outline" size="icon" className="relative">
             <Bell className="w-5 h-5" />
