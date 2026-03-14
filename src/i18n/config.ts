@@ -203,7 +203,6 @@ const resources = {
       
       // Navbar
       logout: "Logout",
-      profile: "Profile",
       settings: "Settings",
       
       // Common
@@ -215,8 +214,6 @@ const resources = {
       save: "Save",
       cancel: "Cancel",
       confirm: "Confirm",
-      delete: "Delete",
-      edit: "Edit",
       add: "Add",
       back: "Back",
       next: "Next",
@@ -471,7 +468,6 @@ const resources = {
       
       // Navbar
       logout: "लॉगआउट",
-      profile: "प्रोफ़ाइल",
       settings: "सेटिंग्स",
       
       // Common
@@ -483,8 +479,6 @@ const resources = {
       save: "सहेजें",
       cancel: "रद्द करें",
       confirm: "पुष्टि करें",
-      delete: "हटाएं",
-      edit: "संपादित करें",
       add: "जोड़ें",
       back: "वापस",
       next: "अगला",
@@ -498,38 +492,10 @@ const resources = {
       upload: "अपलोड",
       
       // Weather Page
-      weatherTitle: "मौसम और पूर्वानुमान",
-      currentWeather: "वर्तमान मौसम",
-      forecast: "पूर्वानुमान",
-      temperature: "तापमान",
-      feelsLike: "महसूस होता है",
-      windDirection: "हवा की दिशा",
-      pressure: "दबाव",
-      visibility: "दृश्यमानता",
-      uvIndex: "UV सूचकांक",
-      dewPoint: "ओस बिंदु",
       
       // Advisor Page
-      advisorTitle: "खेत सलाहकार",
-      askAdvisor: "खेत सलाहकार से पूछें",
-      typeYourQuestion: "अपना प्रश्न यहां टाइप करें...",
-      send: "भेजें",
-      noConversation: "खेत सलाहकार के साथ बातचीत शुरू करें",
       
-      // Activity Log Page
-      activityLogTitle: "गतिविधि लॉग",
-      viewAllFarmActivities: "सभी खेत की गतिविधियों और घटनाओं को देखें",
-      filterByType: "प्रकार के अनुसार फ़िल्टर करें",
-      allActivities: "सभी गतिविधियां",
-      filterByDate: "तारीख के अनुसार फ़िल्टर करें",
-      from: "से",
-      to: "को",
-      apply: "लागू करें",
-      reset: "रीसेट करें",
-      activityType: "गतिविधि का प्रकार",
-      activityDate: "गतिविधि की तारीख",
-      activityDetails: "गतिविधि विवरण",
-      noActivities: "कोई गतिविधि नहीं मिली",
+      // Activity Log Page
     }
   },
   te: {
@@ -739,7 +705,6 @@ const resources = {
       
       // Navbar
       logout: "లాగ్ అవుట్",
-      profile: "ప్రొఫైల్",
       settings: "సెట్టింగ్‌లు",
       
       // Common
@@ -751,8 +716,6 @@ const resources = {
       save: "సేవ్ చేయండి",
       cancel: "రద్దు చేయండి",
       confirm: "నిర్ధారించండి",
-      delete: "తొలగించండి",
-      edit: "సవరించండి",
       add: "జోడించండి",
       back: "వెనుకకు",
       next: "తరువాత",
@@ -766,38 +729,10 @@ const resources = {
       upload: "అప్‌లోడ్ చేయండి",
       
       // Weather Page
-      weatherTitle: "వాతావరణం & ఊహ",
-      currentWeather: "ప్రస్తుత వాతావరణం",
-      forecast: "ఊహ",
-      temperature: "ఉష్ణోగ్రత",
-      feelsLike: "అనిపిస్తుంది",
-      windDirection: "గాలి దిశ",
-      pressure: "పీడనం",
-      visibility: "దృశ్యమానత",
-      uvIndex: "UV సూచిక",
-      dewPoint: "ఇత్తడి బిందువు",
       
       // Advisor Page
-      advisorTitle: "వ్యవసాయ సలహాదారు",
-      askAdvisor: "వ్యవసాయ సలహాదారుని అడగండి",
-      typeYourQuestion: "ఇక్కడ మీ ప్రశ్నను టైప్ చేయండి...",
-      send: "పంపండి",
-      noConversation: "వ్యవసాయ సలహాదారుతో సంభాషణ ప్రారంభించండి",
       
-      // Activity Log Page
-      activityLogTitle: "కార్యాచరణ లాగ్",
-      viewAllFarmActivities: "అన్ని వ్యవసాయ కార్యాచరణలు మరియు ఈవెంట్‌లను చూడండి",
-      filterByType: "రకం ద్వారా ఫిల్టర్ చేయండి",
-      allActivities: "అన్ని కార్యాచరణలు",
-      filterByDate: "తేదీ ద్వారా ఫిల్టర్ చేయండి",
-      from: "నుండి",
-      to: "కు",
-      apply: "వర్తించండి",
-      reset: "రీసెట్ చేయండి",
-      activityType: "కార్యాచరణ రకం",
-      activityDate: "కార్యాచరణ తేదీ",
-      activityDetails: "కార్యాచరణ వివరాలు",
-      noActivities: "ఎటువంటి కార్యాచరణలు కనుగొనబడలేదు",
+      // Activity Log Page
     }
   },
   ta: {
