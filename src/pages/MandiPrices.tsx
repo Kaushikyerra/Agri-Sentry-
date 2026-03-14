@@ -191,13 +191,13 @@ const MandiPrices = () => {
                                 <CardDescription>{t('realTimeMarketData')}</CardDescription>
                                 <div className="flex gap-4 mt-4 flex-wrap">
                                     <Input
-                                        placeholder={t('selectCrop')}
+                                        placeholder="State"
                                         value={searchState}
                                         onChange={(e) => setSearchState(e.target.value)}
                                         className="max-w-xs"
                                     />
                                     <Input
-                                        placeholder={t('selectMandi')}
+                                        placeholder="District"
                                         value={searchDistrict}
                                         onChange={(e) => setSearchDistrict(e.target.value)}
                                         className="max-w-xs"
@@ -268,11 +268,11 @@ const MandiPrices = () => {
                                     <form onSubmit={handlePredict} className="space-y-4">
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label>{t('location')}</Label>
+                                                <Label>State</Label>
                                                 <Input required placeholder="e.g. Assam" value={predState} onChange={e => setPredState(e.target.value)} />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label>{t('selectMandi')}</Label>
+                                                <Label>District</Label>
                                                 <Input required placeholder="e.g. Nagaon" value={predDistrict} onChange={e => setPredDistrict(e.target.value)} />
                                             </div>
                                         </div>
@@ -292,7 +292,7 @@ const MandiPrices = () => {
                                                 <Input required placeholder="e.g. Jute" value={predCommodity} onChange={e => setPredCommodity(e.target.value)} />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label>{t('stage')}</Label>
+                                                <Label>Variety</Label>
                                                 <Input required placeholder="e.g. TD-5" value={predVariety} onChange={e => setPredVariety(e.target.value)} />
                                             </div>
                                         </div>

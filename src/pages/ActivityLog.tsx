@@ -44,6 +44,81 @@ const ActivityLog = () => {
       return;
     }
     loadActivities();
+    generateAIActivities();
+  };
+
+  const generateAIActivities = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+      
+      // Fetch latest sensor readings
+      const sensorResponse = await fetch(`${backendUrl}/sensor-readings/latest`);
+      const sensorData = await sensorResponse.json();
+      
+      // Fetch user profile for crop info
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (sensorData.data && Array.isArray(sensorData.data)) {
+        const readings = sensorData.data;
+        const soilMoisture = readings.find((r: any) => r.sensor_type === 'soil_moisture')?.value;
+        const temperature = readings.find((r: any) => r.sensor_type === 'temperature')?.value;
+        const humidity = readings.find((r: any) => r.sensor_type === 'humidity')?.value;
+
+        // Generate AI-based activity suggestions
+        const aiActivities = [];
+
+        if (soilMoisture !== undefined && soilMoisture < 30) {
+          aiActivities.push({
+            activity_type: 'irrigation',
+            description: `AI Alert: Soil moisture is ${soilMoisture}%. Irrigation recommended to maintain optimal moisture levels.`,
+            activity_date: new Date().toISOString()
+          });
+        }
+
+        if (temperature !== undefined && temperature > 40) {
+          aiActivities.push({
+            activity_type: 'maintenance',
+            description: `AI Alert: Temperature is ${temperature}°C. High temperature detected. Consider providing shade or increasing irrigation frequency.`,
+            activity_date: new Date().toISOString()
+          });
+        }
+
+        if (humidity !== undefined && humidity < 40) {
+          aiActivities.push({
+            activity_type: 'pest_control',
+            description: `AI Alert: Humidity is ${humidity}%. Low humidity may increase pest activity. Monitor crops closely.`,
+            activity_date: new Date().toISOString()
+          });
+        }
+
+        // Insert AI-generated activities
+        for (const activity of aiActivities) {
+          const { data: existing } = await supabase
+            .from('farmer_activities')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .eq('activity_type', activity.activity_type)
+            .eq('activity_date', activity.activity_date.split('T')[0])
+            .single();
+
+          if (!existing) {
+            await supabase.from('farmer_activities').insert({
+              user_id: session.user.id,
+              ...activity
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.log('AI activity generation error:', error);
+    }
   };
 
   const loadActivities = async () => {

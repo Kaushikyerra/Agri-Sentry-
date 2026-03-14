@@ -30,7 +30,41 @@ const Dashboard = () => {
     checkUser();
     loadDashboardData();
     loadUserProfile();
+    getLocationFromBrowser();
   }, []);
+
+  const getLocationFromBrowser = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          // Reverse geocode to get location name
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+            const data = await response.json();
+            const locationName = data.address?.city || data.address?.town || data.address?.county || 'Location';
+            
+            // Update profile with location
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+              await supabase
+                .from('profiles')
+                .update({ location: locationName })
+                .eq('id', session.user.id);
+              setUserProfile((prev: any) => ({ ...prev, location: locationName }));
+            }
+          } catch (error) {
+            console.log('Reverse geocoding error:', error);
+          }
+        },
+        (error) => {
+          console.log('Geolocation error:', error);
+        }
+      );
+    }
+  };
 
   const checkUser = async () => {
     const { data: { session } } = await supabase.auth.getSession();
