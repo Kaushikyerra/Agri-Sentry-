@@ -42,11 +42,45 @@ load_dotenv()
 
 SUPABASE_URL = os.getenv("VITE_SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("VITE_SUPABASE_PUBLISHABLE_KEY")
-supabase: Client = None
-if SUPABASE_URL and SUPABASE_KEY:
-    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-else:
-    print("Warning: Supabase credentials not configured")
+
+# Lazy initialization of Supabase client
+_supabase_client: Client = None
+
+def get_supabase_client() -> Client:
+    """Get or initialize Supabase client on first use (lazy initialization)"""
+    global _supabase_client
+    
+    if _supabase_client is not None:
+        return _supabase_client
+    
+    url = os.getenv("VITE_SUPABASE_URL")
+    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("VITE_SUPABASE_PUBLISHABLE_KEY")
+    
+    if not url or not key:
+        print("Error: Supabase credentials not configured. Set VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.")
+        return None
+    
+    try:
+        _supabase_client = create_client(url, key)
+        print("Supabase client initialized successfully")
+        return _supabase_client
+    except Exception as e:
+        print(f"Failed to initialize Supabase client: {e}")
+        return None
+
+# Alias for backward compatibility
+supabase = None
+
+class SupabaseProxy:
+    """Proxy object that lazily initializes Supabase client on first use"""
+    def __getattr__(self, name):
+        client = get_supabase_client()
+        if client is None:
+            raise RuntimeError("Supabase client not initialized. Check environment variables.")
+        return getattr(client, name)
+
+# Replace supabase with proxy for transparent lazy initialization
+supabase = SupabaseProxy()
 
 
 def _is_table_missing(e: Exception) -> bool:
@@ -55,12 +89,16 @@ def _is_table_missing(e: Exception) -> bool:
 
 
 def get_user_id_from_token(authorization: Optional[str] = Header(None)) -> str:
-    if not authorization or not supabase:
+    if not authorization:
         raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    client = get_supabase_client()
+    if not client:
+        raise HTTPException(status_code=500, detail="Database connection failed")
     
     try:
         token = authorization.replace("Bearer ", "")
-        user_response = supabase.auth.get_user(token)
+        user_response = client.auth.get_user(token)
         
         if not user_response or not user_response.user:
             raise HTTPException(status_code=401, detail="Invalid token")

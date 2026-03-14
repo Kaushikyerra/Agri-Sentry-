@@ -7,7 +7,32 @@ load_dotenv()
 SUPABASE_URL = os.getenv("VITE_SUPABASE_URL")
 SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY) if SUPABASE_URL and SUPABASE_SERVICE_KEY else None
+# Lazy initialization of Supabase client
+_supabase_client: Client = None
+
+def get_supabase_client() -> Client:
+    """Get or initialize Supabase client on first use (lazy initialization)"""
+    global _supabase_client
+    
+    if _supabase_client is not None:
+        return _supabase_client
+    
+    url = os.getenv("VITE_SUPABASE_URL")
+    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    
+    if not url or not key:
+        print("Error: Supabase credentials not configured. Set VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.")
+        return None
+    
+    try:
+        _supabase_client = create_client(url, key)
+        print("Supabase client initialized successfully")
+        return _supabase_client
+    except Exception as e:
+        print(f"Failed to initialize Supabase client: {e}")
+        return None
+
+supabase: Client = None
 
 SCHEMES_DATA = [
     {
@@ -169,17 +194,18 @@ SCHEMES_DATA = [
 ]
 
 def seed_schemes():
-    if not supabase:
+    client = get_supabase_client()
+    if not client:
         print("Supabase client not configured")
         return
     
     try:
-        existing = supabase.table("government_schemes").select("id").execute()
+        existing = client.table("government_schemes").select("id").execute()
         if existing.data and len(existing.data) > 0:
             print(f"Database already has {len(existing.data)} schemes. Skipping seed.")
             return
         
-        response = supabase.table("government_schemes").insert(SCHEMES_DATA).execute()
+        response = client.table("government_schemes").insert(SCHEMES_DATA).execute()
         print(f"Successfully seeded {len(response.data)} government schemes")
     except Exception as e:
         print(f"Error seeding schemes: {e}")

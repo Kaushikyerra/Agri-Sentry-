@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +7,7 @@ import { ArrowLeft, Cloud, CloudRain, Sun, Wind, Droplets, Thermometer, AlertTri
 import Navbar from "@/components/Navbar";
 
 const Weather = () => {
+  const { t } = useTranslation();
   const [weather, setWeather] = useState({
     current: {
       temp: 28,
@@ -34,11 +36,11 @@ const Weather = () => {
         <div className="max-w-7xl mx-auto">
           <Button variant="ghost" onClick={() => navigate("/dashboard")} className="mb-4">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
+            {t('back')}
           </Button>
           
-          <h1 className="text-4xl font-bold mb-2">Weather Forecast</h1>
-          <p className="text-muted-foreground mb-8">Plan your farming activities based on weather conditions</p>
+          <h1 className="text-4xl font-bold mb-2">{t('weatherTitle')}</h1>
+          <p className="text-muted-foreground mb-8">{t('currentWeather')}</p>
 
           {/* Current Weather */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
@@ -46,7 +48,7 @@ const Weather = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Sun className="h-6 w-6 text-sun animate-float" />
-                  Current Weather
+                  {t('currentWeather')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -66,14 +68,14 @@ const Weather = () => {
                   <div className="flex items-center gap-2">
                     <Droplets className="h-5 w-5 text-water" />
                     <div>
-                      <p className="text-xs text-muted-foreground">Humidity</p>
+                      <p className="text-xs text-muted-foreground">{t('humidity')}</p>
                       <p className="font-semibold">{weather.current.humidity}%</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Wind className="h-5 w-5 text-accent" />
                     <div>
-                      <p className="text-xs text-muted-foreground">Wind</p>
+                      <p className="text-xs text-muted-foreground">{t('windSpeed')}</p>
                       <p className="font-semibold">{weather.current.windSpeed} km/h</p>
                     </div>
                   </div>
@@ -86,7 +88,7 @@ const Weather = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Thermometer className="h-6 w-6 text-primary" />
-                  AI Weather Recommendation
+                  {t('aiName')} {t('aiTips')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -122,7 +124,7 @@ const Weather = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Cloud className="h-6 w-6 text-accent" />
-                7-Day Forecast
+                {t('forecast')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -138,7 +140,7 @@ const Weather = () => {
                     <p className="text-xs text-muted-foreground text-center">{day.condition}</p>
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Droplets className="h-3 w-3" />
-                      {day.humidity}%
+                      {t('humidity')}: {day.humidity}%
                     </div>
                   </div>
                 ))}

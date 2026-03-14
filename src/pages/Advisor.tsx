@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ interface Message {
 }
 
 const Advisor = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -68,8 +70,8 @@ const Advisor = () => {
     } catch (error: any) {
       console.error('Chat error:', error);
       toast({
-        title: "Error",
-        description: "Failed to get response. Please try again.",
+        title: t('error'),
+        description: t('loading'),
         variant: "destructive"
       });
     } finally {
@@ -84,17 +86,17 @@ const Advisor = () => {
         <div className="max-w-4xl mx-auto">
           <Button variant="ghost" onClick={() => navigate("/dashboard")} className="mb-4">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
+            {t('back')}
           </Button>
           
-          <h1 className="text-4xl font-bold mb-2">AI Agricultural Advisor</h1>
-          <p className="text-muted-foreground mb-8">Get expert farming advice powered by AI</p>
+          <h1 className="text-4xl font-bold mb-2">{t('advisorTitle')}</h1>
+          <p className="text-muted-foreground mb-8">{t('askAdvisor')}</p>
 
           <Card className="border-2 shadow-glow h-[600px] flex flex-col">
             <CardHeader className="bg-gradient-field text-white rounded-t-lg flex-shrink-0">
               <CardTitle className="flex items-center gap-2">
                 <MessageCircle className="h-5 w-5" />
-                Chat with Your Advisor
+                {t('startConversation')}
               </CardTitle>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col overflow-hidden p-0">
@@ -103,14 +105,14 @@ const Advisor = () => {
                   {messages.length === 0 && (
                     <div className="text-center py-12 text-muted-foreground">
                       <MessageCircle className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                      <p className="text-lg font-semibold mb-2">Welcome to Your AI Advisor!</p>
-                      <p>Ask me anything about:</p>
+                      <p className="text-lg font-semibold mb-2">{t('noConversation')}</p>
+                      <p>{t('askAdvisor')}:</p>
                       <ul className="mt-2 space-y-1 text-sm">
-                        <li>🌾 Crop management and health</li>
-                        <li>💧 Irrigation scheduling</li>
-                        <li>🌱 Fertilization recommendations</li>
-                        <li>🐛 Pest and disease control</li>
-                        <li>📊 Yield optimization</li>
+                        <li>🌾 {t('manageCrops')}</li>
+                        <li>💧 {t('waterManagement')}</li>
+                        <li>🌱 {t('nutrientPlanning')}</li>
+                        <li>🐛 {t('pestControl')}</li>
+                        <li>📊 {t('farmHistory')}</li>
                       </ul>
                     </div>
                   )}
@@ -134,7 +136,7 @@ const Advisor = () => {
                     <div className="flex justify-start">
                       <div className="bg-muted rounded-lg p-4 flex items-center gap-2 border-2">
                         <Loader2 className="h-4 w-4 animate-spin" />
-                        <p>Analyzing your query...</p>
+                        <p>{t('loading')}</p>
                       </div>
                     </div>
                   )}
@@ -145,7 +147,7 @@ const Advisor = () => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-                  placeholder="Ask about your crops, irrigation, fertilization..."
+                  placeholder={t('typeYourQuestion')}
                   disabled={loading}
                   className="flex-1"
                 />

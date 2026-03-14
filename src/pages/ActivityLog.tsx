@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ interface Activity {
 }
 
 const ActivityLog = () => {
+  const { t } = useTranslation();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -72,14 +74,14 @@ const ActivityLog = () => {
 
     if (error) {
       toast({
-        title: "Error",
-        description: "Failed to add activity",
+        title: t('error'),
+        description: t('loading'),
         variant: "destructive"
       });
     } else {
       toast({
-        title: "Success",
-        description: "Activity logged successfully"
+        title: t('success'),
+        description: t('loading')
       });
       setIsDialogOpen(false);
       setFormData({ activity_type: "", description: "", activity_date: new Date().toISOString().split('T')[0] });
@@ -114,51 +116,51 @@ const ActivityLog = () => {
             <div>
               <Button variant="ghost" onClick={() => navigate("/dashboard")} className="mb-4">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Dashboard
+                {t('back')}
               </Button>
-              <h1 className="text-4xl font-bold">Activity Log</h1>
-              <p className="text-muted-foreground">Track all your farming activities</p>
+              <h1 className="text-4xl font-bold">{t('activityLogTitle')}</h1>
+              <p className="text-muted-foreground">{t('viewAllFarmActivities')}</p>
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-gradient-field">
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Activity
+                  {t('add')}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Log New Activity</DialogTitle>
+                  <DialogTitle>{t('logIrrigationActivity')}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   <div>
-                    <Label htmlFor="type">Activity Type</Label>
+                    <Label htmlFor="type">{t('activityType')}</Label>
                     <Select value={formData.activity_type} onValueChange={(value) => setFormData({ ...formData, activity_type: value })}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select activity type" />
+                        <SelectValue placeholder={t('selectField')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="irrigation">Irrigation</SelectItem>
-                        <SelectItem value="fertilization">Fertilization</SelectItem>
-                        <SelectItem value="planting">Planting</SelectItem>
-                        <SelectItem value="harvesting">Harvesting</SelectItem>
-                        <SelectItem value="pest_control">Pest Control</SelectItem>
-                        <SelectItem value="maintenance">Maintenance</SelectItem>
+                        <SelectItem value="irrigation">{t('irrigation')}</SelectItem>
+                        <SelectItem value="fertilization">{t('fertilization')}</SelectItem>
+                        <SelectItem value="planting">{t('addField')}</SelectItem>
+                        <SelectItem value="harvesting">{t('harvesting')}</SelectItem>
+                        <SelectItem value="pest_control">{t('pestControl')}</SelectItem>
+                        <SelectItem value="maintenance">{t('other')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="description">Description</Label>
+                    <Label htmlFor="description">{t('notes')}</Label>
                     <Textarea
                       id="description"
                       value={formData.description}
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      placeholder="Describe the activity..."
+                      placeholder={t('notesPlaceholder')}
                       rows={4}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="date">Date</Label>
+                    <Label htmlFor="date">{t('date')}</Label>
                     <Input
                       id="date"
                       type="date"
@@ -167,7 +169,7 @@ const ActivityLog = () => {
                     />
                   </div>
                   <Button onClick={handleAddActivity} className="w-full bg-gradient-field">
-                    Log Activity
+                    {t('logIrrigationButton')}
                   </Button>
                 </div>
               </DialogContent>
@@ -212,10 +214,10 @@ const ActivityLog = () => {
           {activities.length === 0 && (
             <div className="text-center py-12">
               <Calendar className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-              <p className="text-muted-foreground mb-4">No activities logged yet</p>
+              <p className="text-muted-foreground mb-4">{t('noActivities')}</p>
               <Button onClick={() => setIsDialogOpen(true)} className="bg-gradient-field">
                 <Plus className="h-4 w-4 mr-2" />
-                Log Your First Activity
+                {t('add')}
               </Button>
             </div>
           )}

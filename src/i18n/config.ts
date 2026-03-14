@@ -201,45 +201,6 @@ const resources = {
       noPriceData: "No price data available",
       loadingPrices: "Loading prices...",
       
-      // Activity Log Page
-      activityLogTitle: "Activity Log",
-      viewAllFarmActivities: "View all farm activities and events",
-      filterByType: "Filter by Type",
-      allActivities: "All Activities",
-      irrigation: "Irrigation",
-      fertilization: "Fertilization",
-      pestControl: "Pest Control",
-      harvesting: "Harvesting",
-      other: "Other",
-      filterByDate: "Filter by Date",
-      from: "From",
-      to: "To",
-      apply: "Apply",
-      reset: "Reset",
-      activityType: "Activity Type",
-      activityDate: "Activity Date",
-      activityDetails: "Activity Details",
-      noActivities: "No activities found",
-      
-      // Weather Page
-      weatherTitle: "Weather & Forecast",
-      currentWeather: "Current Weather",
-      forecast: "Forecast",
-      temperature: "Temperature",
-      feelsLike: "Feels Like",
-      windDirection: "Wind Direction",
-      pressure: "Pressure",
-      visibility: "Visibility",
-      uvIndex: "UV Index",
-      dewPoint: "Dew Point",
-      
-      // Advisor Page
-      advisorTitle: "Farm Advisor",
-      askAdvisor: "Ask Farm Advisor",
-      typeYourQuestion: "Type your question here...",
-      send: "Send",
-      noConversation: "Start a conversation with the farm advisor",
-      
       // Navbar
       logout: "Logout",
       profile: "Profile",
@@ -267,6 +228,40 @@ const resources = {
       import: "Import",
       download: "Download",
       upload: "Upload",
+      
+      // Weather Page
+      weatherTitle: "Weather & Forecast",
+      currentWeather: "Current Weather",
+      forecast: "Forecast",
+      temperature: "Temperature",
+      feelsLike: "Feels Like",
+      windDirection: "Wind Direction",
+      pressure: "Pressure",
+      visibility: "Visibility",
+      uvIndex: "UV Index",
+      dewPoint: "Dew Point",
+      
+      // Advisor Page
+      advisorTitle: "Farm Advisor",
+      askAdvisor: "Ask Farm Advisor",
+      typeYourQuestion: "Type your question here...",
+      send: "Send",
+      noConversation: "Start a conversation with the farm advisor",
+      
+      // Activity Log Page
+      activityLogTitle: "Activity Log",
+      viewAllFarmActivities: "View all farm activities and events",
+      filterByType: "Filter by Type",
+      allActivities: "All Activities",
+      filterByDate: "Filter by Date",
+      from: "From",
+      to: "To",
+      apply: "Apply",
+      reset: "Reset",
+      activityType: "Activity Type",
+      activityDate: "Activity Date",
+      activityDetails: "Activity Details",
+      noActivities: "No activities found",
     }
   },
   hi: {
@@ -445,11 +440,6 @@ const resources = {
       viewAllFarmActivities: "सभी खेत की गतिविधियों और घटनाओं को देखें",
       filterByType: "प्रकार के अनुसार फ़िल्टर करें",
       allActivities: "सभी गतिविधियां",
-      irrigation: "सिंचाई",
-      fertilization: "निषेचन",
-      pestControl: "कीट नियंत्रण",
-      harvesting: "कटाई",
-      other: "अन्य",
       filterByDate: "तारीख के अनुसार फ़िल्टर करें",
       from: "से",
       to: "को",
@@ -506,6 +496,40 @@ const resources = {
       import: "आयात",
       download: "डाउनलोड",
       upload: "अपलोड",
+      
+      // Weather Page
+      weatherTitle: "मौसम और पूर्वानुमान",
+      currentWeather: "वर्तमान मौसम",
+      forecast: "पूर्वानुमान",
+      temperature: "तापमान",
+      feelsLike: "महसूस होता है",
+      windDirection: "हवा की दिशा",
+      pressure: "दबाव",
+      visibility: "दृश्यमानता",
+      uvIndex: "UV सूचकांक",
+      dewPoint: "ओस बिंदु",
+      
+      // Advisor Page
+      advisorTitle: "खेत सलाहकार",
+      askAdvisor: "खेत सलाहकार से पूछें",
+      typeYourQuestion: "अपना प्रश्न यहां टाइप करें...",
+      send: "भेजें",
+      noConversation: "खेत सलाहकार के साथ बातचीत शुरू करें",
+      
+      // Activity Log Page
+      activityLogTitle: "गतिविधि लॉग",
+      viewAllFarmActivities: "सभी खेत की गतिविधियों और घटनाओं को देखें",
+      filterByType: "प्रकार के अनुसार फ़िल्टर करें",
+      allActivities: "सभी गतिविधियां",
+      filterByDate: "तारीख के अनुसार फ़िल्टर करें",
+      from: "से",
+      to: "को",
+      apply: "लागू करें",
+      reset: "रीसेट करें",
+      activityType: "गतिविधि का प्रकार",
+      activityDate: "गतिविधि की तारीख",
+      activityDetails: "गतिविधि विवरण",
+      noActivities: "कोई गतिविधि नहीं मिली",
     }
   },
   te: {
@@ -684,11 +708,6 @@ const resources = {
       viewAllFarmActivities: "అన్ని వ్యవసాయ కార్యాచరణలు మరియు ఈవెంట్‌లను చూడండి",
       filterByType: "రకం ద్వారా ఫిల్టర్ చేయండి",
       allActivities: "అన్ని కార్యాచరణలు",
-      irrigation: "నీటిపారుదల",
-      fertilization: "సారవంతీకరణ",
-      pestControl: "కీటక నియంత్రణ",
-      harvesting: "కోత",
-      other: "ఇతర",
       filterByDate: "తేదీ ద్వారా ఫిల్టర్ చేయండి",
       from: "నుండి",
       to: "కు",
@@ -745,6 +764,40 @@ const resources = {
       import: "దిగుమతి చేయండి",
       download: "డౌన్‌లోడ్ చేయండి",
       upload: "అప్‌లోడ్ చేయండి",
+      
+      // Weather Page
+      weatherTitle: "వాతావరణం & ఊహ",
+      currentWeather: "ప్రస్తుత వాతావరణం",
+      forecast: "ఊహ",
+      temperature: "ఉష్ణోగ్రత",
+      feelsLike: "అనిపిస్తుంది",
+      windDirection: "గాలి దిశ",
+      pressure: "పీడనం",
+      visibility: "దృశ్యమానత",
+      uvIndex: "UV సూచిక",
+      dewPoint: "ఇత్తడి బిందువు",
+      
+      // Advisor Page
+      advisorTitle: "వ్యవసాయ సలహాదారు",
+      askAdvisor: "వ్యవసాయ సలహాదారుని అడగండి",
+      typeYourQuestion: "ఇక్కడ మీ ప్రశ్నను టైప్ చేయండి...",
+      send: "పంపండి",
+      noConversation: "వ్యవసాయ సలహాదారుతో సంభాషణ ప్రారంభించండి",
+      
+      // Activity Log Page
+      activityLogTitle: "కార్యాచరణ లాగ్",
+      viewAllFarmActivities: "అన్ని వ్యవసాయ కార్యాచరణలు మరియు ఈవెంట్‌లను చూడండి",
+      filterByType: "రకం ద్వారా ఫిల్టర్ చేయండి",
+      allActivities: "అన్ని కార్యాచరణలు",
+      filterByDate: "తేదీ ద్వారా ఫిల్టర్ చేయండి",
+      from: "నుండి",
+      to: "కు",
+      apply: "వర్తించండి",
+      reset: "రీసెట్ చేయండి",
+      activityType: "కార్యాచరణ రకం",
+      activityDate: "కార్యాచరణ తేదీ",
+      activityDetails: "కార్యాచరణ వివరాలు",
+      noActivities: "ఎటువంటి కార్యాచరణలు కనుగొనబడలేదు",
     }
   },
   ta: {
@@ -811,6 +864,40 @@ const resources = {
       aiRecommendedSchemes: "AI பரிந்துரைக்கப்பட்ட திட்டங்கள்",
       learnMore: "மேலும் அறிக",
       noSchemesAvailable: "தற்போது திட்டங்கள் எதுவும் இல்லை",
+      
+      // Weather Page
+      weatherTitle: "வானிலை & முன்னறிவிப்பு",
+      currentWeather: "தற்போதைய வானிலை",
+      forecast: "முன்னறிவிப்பு",
+      temperature: "வெப்பநிலை",
+      feelsLike: "உணர்வு",
+      windDirection: "காற்றின் திசை",
+      pressure: "அழுத்தம்",
+      visibility: "பார்வை",
+      uvIndex: "UV குறியீட்டு",
+      dewPoint: "பனி புள்ளி",
+      
+      // Advisor Page
+      advisorTitle: "பண்ணை ஆலோசகர்",
+      askAdvisor: "பண்ணை ஆலோசகரிடம் கேளுங்கள்",
+      typeYourQuestion: "உங்கள் கேள்வியை இங்கே தட்டச்சு செய்யவும்...",
+      send: "அனுப்பு",
+      noConversation: "பண்ணை ஆலோசகருடன் உரையாடலைத் தொடங்கவும்",
+      
+      // Activity Log Page
+      activityLogTitle: "செயல்பாடு பதிவு",
+      viewAllFarmActivities: "அனைத்து பண்ணை செயல்பாடுகள் மற்றும் நிகழ்வுகளைக் காணவும்",
+      filterByType: "வகை மூலம் வடிகட்டவும்",
+      allActivities: "அனைத்து செயல்பாடுகள்",
+      filterByDate: "தேதி மூலம் வடிகட்டவும்",
+      from: "இருந்து",
+      to: "க்கு",
+      apply: "பயன்படுத்தவும்",
+      reset: "மீட்டமை",
+      activityType: "செயல்பாட்டு வகை",
+      activityDate: "செயல்பாட்டு தேதி",
+      activityDetails: "செயல்பாட்டு விவரங்கள்",
+      noActivities: "செயல்பாடுகள் எதுவும் கிடைக்கவில்லை",
     }
   },
   ml: {
@@ -877,6 +964,40 @@ const resources = {
       aiRecommendedSchemes: "AI ശുപാർശ ചെയ്ത പദ്ധതികൾ",
       learnMore: "കൂടുതൽ അറിയുക",
       noSchemesAvailable: "നിലവിൽ പദ്ധതികളൊന്നും ലഭ്യമല്ല",
+      
+      // Weather Page
+      weatherTitle: "കാലാവസ്ഥ & പ്രവചനം",
+      currentWeather: "നിലവിലെ കാലാവസ്ഥ",
+      forecast: "പ്രവചനം",
+      temperature: "താപനില",
+      feelsLike: "അനുഭവപ്പെടുന്നത്",
+      windDirection: "കാറ്റിന്റെ ദിശ",
+      pressure: "സമ്മർദ്ദം",
+      visibility: "ദൃശ്യമാനത",
+      uvIndex: "UV സൂചിക",
+      dewPoint: "ശിശിരബിന്ദു",
+      
+      // Advisor Page
+      advisorTitle: "കൃഷി ഉപദേശകൻ",
+      askAdvisor: "കൃഷി ഉപദേശകനോട് ചോദിക്കുക",
+      typeYourQuestion: "നിങ്ങളുടെ ചോദ്യം ഇവിടെ ടൈപ്പ് ചെയ്യുക...",
+      send: "അയയ്ക്കുക",
+      noConversation: "കൃഷി ഉപദേശകനുമായി സംഭാഷണം ആരംഭിക്കുക",
+      
+      // Activity Log Page
+      activityLogTitle: "പ്രവർത്തന രേഖ",
+      viewAllFarmActivities: "എല്ലാ കൃഷി പ്രവർത്തനങ്ങളും ഇവന്റുകളും കാണുക",
+      filterByType: "തരം അനുസരിച്ച് ഫിൽട്ടർ ചെയ്യുക",
+      allActivities: "എല്ലാ പ്രവർത്തനങ്ങളും",
+      filterByDate: "തീയതി അനുസരിച്ച് ഫിൽട്ടർ ചെയ്യുക",
+      from: "നിന്ന്",
+      to: "ലേക്ക്",
+      apply: "പ്രയോഗിക്കുക",
+      reset: "പുനരാരംഭിക്കുക",
+      activityType: "പ്രവർത്തന തരം",
+      activityDate: "പ്രവർത്തന തീയതി",
+      activityDetails: "പ്രവർത്തന വിശദാംശങ്ങൾ",
+      noActivities: "പ്രവർത്തനങ്ങൾ കണ്ടെത്തിയില്ല",
     }
   },
   kn: {
@@ -943,6 +1064,40 @@ const resources = {
       aiRecommendedSchemes: "AI ಶಿಫಾರಸು ಮಾಡಿದ ಯೋಜನೆಗಳು",
       learnMore: "ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ",
       noSchemesAvailable: "ಪ್ರಸ್ತುತ ಯಾವುದೇ ಯೋಜನೆಗಳು ಲಭ್ಯವಿಲ್ಲ",
+      
+      // Weather Page
+      weatherTitle: "ಹವಾಮಾನ & ಮುನ್ನೋಟ",
+      currentWeather: "ಪ್ರಸ್ತುತ ಹವಾಮಾನ",
+      forecast: "ಮುನ್ನೋಟ",
+      temperature: "ತಾಪಮಾನ",
+      feelsLike: "ಅನುಭವವಾಗುತ್ತದೆ",
+      windDirection: "ಗಾಳಿಯ ದಿಕ್ಕು",
+      pressure: "ಒತ್ತಡ",
+      visibility: "ಗೋಚರತೆ",
+      uvIndex: "UV ಸೂಚಿ",
+      dewPoint: "ಶಿಶಿರ ಬಿಂದು",
+      
+      // Advisor Page
+      advisorTitle: "ಕೃಷಿ ಸಲಹೆಗಾರ",
+      askAdvisor: "ಕೃಷಿ ಸಲಹೆಗಾರನನ್ನು ಕೇಳಿ",
+      typeYourQuestion: "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಇಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ...",
+      send: "ಕಳುಹಿಸಿ",
+      noConversation: "ಕೃಷಿ ಸಲಹೆಗಾರನೊಂದಿಗೆ ಸಂಭಾಷಣೆ ಪ್ರಾರಂಭಿಸಿ",
+      
+      // Activity Log Page
+      activityLogTitle: "ಚಟುವಟಿಕೆ ದಾಖಲೆ",
+      viewAllFarmActivities: "ಎಲ್ಲಾ ಕೃಷಿ ಚಟುವಟಿಕೆಗಳು ಮತ್ತು ಘಟನೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ",
+      filterByType: "ಪ್ರಕಾರದ ಮೂಲಕ ಫಿಲ್ಟರ್ ಮಾಡಿ",
+      allActivities: "ಎಲ್ಲಾ ಚಟುವಟಿಕೆಗಳು",
+      filterByDate: "ದಿನಾಂಕದ ಮೂಲಕ ಫಿಲ್ಟರ್ ಮಾಡಿ",
+      from: "ಇಂದ",
+      to: "ಗೆ",
+      apply: "ಅನ್ವಯಿಸಿ",
+      reset: "ಮರುಹೊಂದಿಸಿ",
+      activityType: "ಚಟುವಟಿಕೆ ಪ್ರಕಾರ",
+      activityDate: "ಚಟುವಟಿಕೆ ದಿನಾಂಕ",
+      activityDetails: "ಚಟುವಟಿಕೆ ವಿವರಗಳು",
+      noActivities: "ಯಾವುದೇ ಚಟುವಟಿಕೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ",
     }
   },
   pa: {
@@ -1009,6 +1164,40 @@ const resources = {
       aiRecommendedSchemes: "AI ਸਿਫਾਰਸ਼ ਕੀਤੀਆਂ ਯੋਜਨਾਵਾਂ",
       learnMore: "ਹੋਰ ਜਾਣੋ",
       noSchemesAvailable: "ਫਿਲਹਾਲ ਕੋਈ ਯੋਜਨਾ ਉਪਲਬਧ ਨਹੀਂ",
+      
+      // Weather Page
+      weatherTitle: "ਮੌਸਮ & ਪੂਰਵ ਅਨੁਮਾਨ",
+      currentWeather: "ਮੌਜੂਦਾ ਮੌਸਮ",
+      forecast: "ਪੂਰਵ ਅਨੁਮਾਨ",
+      temperature: "ਤਾਪਮਾਨ",
+      feelsLike: "ਮਹਿਸੂਸ ਹੁੰਦਾ ਹੈ",
+      windDirection: "ਹਵਾ ਦੀ ਦਿਸ਼ਾ",
+      pressure: "ਦਬਾਅ",
+      visibility: "ਦਿਖਾਈ ਦੇਣਾ",
+      uvIndex: "UV ਸੂਚਕਾਂਕ",
+      dewPoint: "ਓਸ ਬਿੰਦੂ",
+      
+      // Advisor Page
+      advisorTitle: "ਖੇਤੀ ਸਲਾਹਕਾਰ",
+      askAdvisor: "ਖੇਤੀ ਸਲਾਹਕਾਰ ਨੂੰ ਪੁੱਛੋ",
+      typeYourQuestion: "ਆਪਣਾ ਸਵਾਲ ਇੱਥੇ ਟਾਈਪ ਕਰੋ...",
+      send: "ਭੇਜੋ",
+      noConversation: "ਖੇਤੀ ਸਲਾਹਕਾਰ ਨਾਲ ਗੱਲਬਾਤ ਸ਼ੁਰੂ ਕਰੋ",
+      
+      // Activity Log Page
+      activityLogTitle: "ਗਤੀਵਿਧੀ ਲੌਗ",
+      viewAllFarmActivities: "ਸਾਰੀਆਂ ਖੇਤੀ ਗਤੀਵਿਧੀਆਂ ਅਤੇ ਘਟਨਾਵਾਂ ਵੇਖੋ",
+      filterByType: "ਕਿਸਮ ਦੁਆਰਾ ਫਿਲਟਰ ਕਰੋ",
+      allActivities: "ਸਾਰੀਆਂ ਗਤੀਵਿਧੀਆਂ",
+      filterByDate: "ਤਾਰੀਖ ਦੁਆਰਾ ਫਿਲਟਰ ਕਰੋ",
+      from: "ਤੋਂ",
+      to: "ਨੂੰ",
+      apply: "ਲਾਗੂ ਕਰੋ",
+      reset: "ਮੁੜ ਸੈਟ ਕਰੋ",
+      activityType: "ਗਤੀਵਿਧੀ ਕਿਸਮ",
+      activityDate: "ਗਤੀਵਿਧੀ ਤਾਰੀਖ",
+      activityDetails: "ਗਤੀਵਿਧੀ ਵੇਰਵੇ",
+      noActivities: "ਕੋਈ ਗਤੀਵਿਧੀ ਨਹੀਂ ਮਿਲੀ",
     }
   }
 };

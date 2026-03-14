@@ -19,11 +19,33 @@ MQTT_USERNAME = os.getenv("MQTT_USERNAME", "")
 MQTT_PASSWORD = os.getenv("MQTT_PASSWORD", "")
 MQTT_USE_TLS = os.getenv("MQTT_USE_TLS", "false").lower() == "true"
 
-supabase: Client = None
-if SUPABASE_URL and SUPABASE_KEY:
-    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-else:
-    logger.warning("Supabase credentials not configured. MQTT client will not function properly.")
+# Lazy initialization of Supabase client
+_supabase_client: Client = None
+
+def get_supabase_client() -> Client:
+    """Get or initialize Supabase client on first use (lazy initialization)"""
+    global _supabase_client
+    
+    if _supabase_client is not None:
+        return _supabase_client
+    
+    url = os.getenv("VITE_SUPABASE_URL")
+    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("VITE_SUPABASE_PUBLISHABLE_KEY")
+    
+    if not url or not key:
+        logger.error("Supabase credentials not configured. Set VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.")
+        return None
+    
+    try:
+        _supabase_client = create_client(url, key)
+        logger.info("Supabase client initialized successfully")
+        return _supabase_client
+    except Exception as e:
+        logger.error(f"Failed to initialize Supabase client: {e}")
+        return None
+
+# Alias for backward compatibility
+supabase = None
 
 SENSOR_THRESHOLDS = {
     "soil_moisture": {"min": 20, "max": 80, "unit": "%"},
@@ -35,7 +57,9 @@ SENSOR_THRESHOLDS = {
 }
 
 def check_alert_thresholds(user_id: str, field_id: str, sensor_type: str, value: float):
-    if not supabase:
+    client = get_supabase_client()
+    if not client:
+        logger.warning("Supabase client not available. Alert not created.")
         return
         
     if sensor_type not in SENSOR_THRESHOLDS:
@@ -54,7 +78,7 @@ def check_alert_thresholds(user_id: str, field_id: str, sensor_type: str, value:
 
     if severity and message:
         try:
-            supabase.table("alerts").insert({
+            client.table("alerts").insert({
                 "user_id": user_id,
                 "alert_type": "sensor_threshold",
                 "severity": severity,
@@ -86,7 +110,8 @@ def on_disconnect(client, userdata, rc):
 
 def on_message(client, userdata, msg):
     try:
-        if not supabase:
+        supabase_client = get_supabase_client()
+        if not supabase_client:
             logger.error("Supabase client not initialized. Cannot process message.")
             return
             
@@ -116,7 +141,7 @@ def on_message(client, userdata, msg):
             return
         
         try:
-            device_response = supabase.table("devices").select("*").eq("device_id", device_id).execute()
+            device_response = supabase_client.table("devices").select("*").eq("device_id", device_id).execute()
             
             if not device_response.data or len(device_response.data) == 0:
                 logger.error(f"Device not found: {device_id}")
@@ -125,7 +150,7 @@ def on_message(client, userdata, msg):
             device = device_response.data[0]
             user_id = device['user_id']
             
-            supabase.table("sensor_readings").insert({
+            supabase_client.table("sensor_readings").insert({
                 "user_id": user_id,
                 "field_id": field_id,
                 "device_id": device['id'],
@@ -134,7 +159,7 @@ def on_message(client, userdata, msg):
                 "unit": unit
             }).execute()
             
-            supabase.table("devices").update({
+            supabase_client.table("devices").update({
                 "status": "online",
                 "last_seen": datetime.utcnow().isoformat()
             }).eq("id", device['id']).execute()

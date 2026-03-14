@@ -14,13 +14,36 @@ logger = logging.getLogger(__name__)
 
 SUPABASE_URL = os.getenv("VITE_SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("VITE_SUPABASE_PUBLISHABLE_KEY")
-supabase: Client = None
-if SUPABASE_URL and SUPABASE_KEY:
-    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+# Lazy initialization of Supabase client
+_supabase_client: Client = None
+
+def get_supabase_client() -> Client:
+    """Get or initialize Supabase client on first use (lazy initialization)"""
+    global _supabase_client
+    
+    if _supabase_client is not None:
+        return _supabase_client
+    
+    url = os.getenv("VITE_SUPABASE_URL")
+    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("VITE_SUPABASE_PUBLISHABLE_KEY")
+    
+    if not url or not key:
+        logger.error("Supabase credentials not configured. Set VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.")
+        return None
+    
+    try:
+        _supabase_client = create_client(url, key)
+        logger.info("Supabase client initialized successfully")
+        return _supabase_client
+    except Exception as e:
+        logger.error(f"Failed to initialize Supabase client: {e}")
+        return None
 
 async def generate_daily_logs_for_all_users():
     logger.info("🌾 Starting daily log generation for all users")
     
+    supabase = get_supabase_client()
     if not supabase:
         logger.error("Supabase client not configured")
         return
