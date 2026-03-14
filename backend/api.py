@@ -111,26 +111,41 @@ def get_user_id_from_token(authorization: Optional[str] = Header(None)) -> str:
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Startup
     print("Starting up...")
-    start_mqtt_client()
-    init_scheduler()
-    start_scheduler()
+    try:
+        start_mqtt_client()
+        print("✅ MQTT client started")
+    except Exception as e:
+        print(f"⚠️ MQTT client failed to start: {e}. Continuing without MQTT...")
     
-    add_job(
-        generate_daily_logs_for_all_users,
-        CronTrigger(hour=19, minute=0, timezone="Asia/Kolkata"),
-        job_id="daily_logs_7pm"
-    )
-    
-    print("✅ MQTT client and Background scheduler started")
-    print("📅 Daily log generation scheduled for 7:00 PM IST")
+    try:
+        init_scheduler()
+        start_scheduler()
+        
+        add_job(
+            generate_daily_logs_for_all_users,
+            CronTrigger(hour=19, minute=0, timezone="Asia/Kolkata"),
+            job_id="daily_logs_7pm"
+        )
+        print("✅ Background scheduler started")
+        print("📅 Daily log generation scheduled for 7:00 PM IST")
+    except Exception as e:
+        print(f"⚠️ Scheduler failed to start: {e}. Continuing without scheduler...")
     
     yield
     
     # Shutdown
     print("Shutting down...")
-    stop_mqtt_client()
-    stop_scheduler()
-    print("✅ MQTT client and Background scheduler stopped")
+    try:
+        stop_mqtt_client()
+    except Exception as e:
+        print(f"⚠️ Error stopping MQTT: {e}")
+    
+    try:
+        stop_scheduler()
+    except Exception as e:
+        print(f"⚠️ Error stopping scheduler: {e}")
+    
+    print("✅ Shutdown complete")
 
 
 app = FastAPI(title="AgriSentry API", lifespan=lifespan)
